@@ -90,7 +90,7 @@ best <- function(state, outcome) {
         # create a vector containing the abbreviations of all US states
         state_codes <- c("AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL",
                          "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME",
-                         "MD", "MA", "MI"," MN", "MS", "MO", "MT", "NE", "NV", "NH",
+                         "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH",
                          "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI",
                          "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY")
         
@@ -132,13 +132,13 @@ best <- function(state, outcome) {
         # find the hospital(s) with the minimum value in the outcome column
         results <- select(filter(sh_clean, sh_clean[, 3] == minimum), c(Hospital, State, all_of(outcome)))
         
-        # sort the results by alphabetical order (if there is a ties)
+        # sort the results by alphabetical order (if there are any ties)
         results_ordered <- results[order(results$Hospital), ]
         
         # select the first-ranked hospital name
         final_result <- results_ordered[1, 1]
         
-        # drom the column name
+        # drop the column name
         names(final_result) <- NULL
         
         # return the result
@@ -152,6 +152,109 @@ best <- function(state, outcome) {
 
 # 3 RANKING HOSPITALS BY OUTCOME IN A STATE ###########################
 
+# Write a function called rankhospital that takes three arguments: the 2-character abbreviated name of a
+# state (state), an outcome (outcome), and the ranking of a hospital in that state for that outcome (num).
+# The function reads the outcome-of-care-measures.csv file and returns a character vector with the name
+# of the hospital that has the ranking specified by the num argument. For example, the call
+
+# rankhospital("MD", "heart failure", 5)
+
+# would return a character vector containing the name of the hospital with the 5th lowest 30-day death rate
+# for heart failure. The num argument can take values "best", "worst", or an integer indicating the ranking
+# (smaller numbers are better). If the number given by num is larger than the number of hospitals in that
+# state, then the function should return NA. Hospitals that do not have data on a particular outcome should
+# be excluded from the set of hospitals when deciding the rankings.
+
+# Handling ties. It may occur that multiple hospitals have the same 30-day mortality rate for a given cause
+# of death. In those cases ties should be broken alphabetically by using the hospital name.
+
+# The function should check the validity of its arguments. If an invalid state value is passed to rankhospital,
+# the function should throw an error via the stop function with the exact message "invalid state". If an invalid
+# outcome value is passed to rankhospital, the function should throw an error via the stop function with
+# the exact message "invalid outcome".
+
+# Here is some sample output from the function.
+
+# > rankhospital("TX", "heart failure", 4)
+# [1] "DETAR HOSPITAL NAVARRO"
+
+# > rankhospital("MD", "heart attack", "worst")
+# 3
+# [1] "HARFORD MEMORIAL HOSPITAL"
+
+# > rankhospital("MN", "heart attack", 5000)
+# [1] NA
+
+
+library(data.table)
+library(dplyr)
+
+rankhospital <- function(state, outcome, num = "best") {
+        
+        # check if arguments are valid
+        state_codes <- c("AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL",
+                         "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME",
+                         "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH",
+                         "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI",
+                         "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY")
+        if (!state %in% state_codes) {
+                stop("invalid state")
+        }
+        outcomes <- c("heart attack", "heart failure", "pneumonia")
+        if (!outcome %in% outcomes) {
+                stop("invalid outcome")
+        }
+        extremes <- c('best', 'worst')
+        if (!num %in% extremes & !is.numeric(num)) {
+                stop("The input for hospital rank must be 'best', 'worst' or a number")
+        }
+
+        # read in the columns with hospital name, state code and the three outcomes (N.B. requires data.table)
+        df <- fread("outcome-of-care-measures.csv", select = c(2, 7, 11, 17, 23))
+        
+        # change the column names so they are more concise
+        colnames(df) <- c("Hospital", "State", "heart attack", "heart failure", "pneumonia")
+        
+        # change all instances of 'Not Available' to <NA>
+        df[df == "Not Available"] <- NA
+        
+        # coerce the outcome columns from character to numeric (N.B. requires dplyr)
+        df <- df %>% mutate_at(c('heart attack', 'heart failure', 'pneumonia'), as.numeric)
+        
+        # filter the dataframe by the inputted state and outcome
+        sh <- select(filter(df, State == state), c(Hospital, State, all_of(outcome)))
+        
+        # filter out the NAs
+        good <- complete.cases(sh)
+        sh_clean <- sh[good, ]
+        
+        # rank the selected state hospitals by outcome and alphabetically (to handle ties)
+        sh_ranked <- arrange(sh_clean, sh_clean[, 3], sh_clean[, 1])
+        
+        # handle the rank argument for 'best','worst' and out of range
+        if(num == "best") {
+                num <- 1
+        }
+        if(num == "worst") {
+                num <- nrow(sh_ranked)
+        }
+        if(num > nrow(sh_ranked)) {
+                return(NA)
+        }
+        # select hospital name according to the ranking argument
+        final_result <- sh_ranked[num, 1]
+        
+        # drop the column name
+        names(final_result) <- NULL
+        
+        # return the result
+        final_result
+}
+
+# Notes ###########################
+
+# When an invalid argument is passed to the 'rankhospital' function the stop() function is correctly executed.
+# However, the system enters debugging mode ... I would like to know how to avoid this.
 
 
 
