@@ -34,6 +34,15 @@
 
 # 1 PLOT THE 30-DAY MORTALITY RATES FOR HEART ATTACK ###########################
 
+# Read the outcome data into R via the read.csv function and look at the first few rows.
+
+outcome <- read.csv("outcome-of-care-measures.csv", colClasses = "character")
+head(outcome)
+
+# There are many columns in this dataset. You can see how many by typing ncol(outcome) (you can see
+# the number of rows with the nrow function). In addition, you can see the names of each column by typing
+# names(outcome).
+
 # Make a simple histogram of the 30-day death rates from heart attack (column 11 in the outcome dataset),
 
 outcome[, 11] <- as.numeric(outcome[, 11])
@@ -87,12 +96,12 @@ library(dplyr)
 
 best <- function(state, outcome) {
         
-        # create a vector containing the abbreviations of all US states
-        state_codes <- c("AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL",
-                         "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME",
-                         "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH",
-                         "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI",
-                         "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY")
+        # create a vector of the state codes included in the dataset
+        state_codes <- c("AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "GA",
+                         "GU", "HI", "IA", "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD",
+                         "ME", "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", "NH", "NJ",
+                         "NM", "NV", "NY", "OH", "OK", "OR", "PA", "PR", "RI", "SC", "SD",
+                         "TN", "TX", "UT", "VA", "VI", "VT", "WA", "WI", "WV", "WY")
         
         # check if the 'state' argument is included in the vector and stop if FALSE
         if (state %in% state_codes == FALSE) {
@@ -192,11 +201,11 @@ library(dplyr)
 rankhospital <- function(state, outcome, num = "best") {
         
         # check if arguments are valid
-        state_codes <- c("AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL",
-                         "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME",
-                         "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH",
-                         "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI",
-                         "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY")
+        state_codes <- c("AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "GA",
+                         "GU", "HI", "IA", "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD",
+                         "ME", "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", "NH", "NJ",
+                         "NM", "NV", "NY", "OH", "OK", "OR", "PA", "PR", "RI", "SC", "SD",
+                         "TN", "TX", "UT", "VA", "VI", "VT", "WA", "WI", "WV", "WY")
         if (!state %in% state_codes) {
                 stop("invalid state")
         }
@@ -257,5 +266,146 @@ rankhospital <- function(state, outcome, num = "best") {
 # However, the system enters debugging mode ... I would like to know how to avoid this.
 
 
+# 4 RANKING HOSPITALS IN ALL STATES ###########################
+
+# Write a function called rankall that takes two arguments: an outcome name (outcome) and a hospital
+# ranking (num). The function reads the outcome-of-care-measures.csv file and returns a 2-column data frame
+# containing the hospital in each state that has the ranking specified in num. For example the function call
+# rankall("heart attack", "best") would return a data frame containing the names of the hospitals that
+# are the best in their respective states for 30-day heart attack death rates. The function should return a value
+# for every state (some may be NA). The first column in the data frame is named hospital, which contains
+# the hospital name, and the second column is named state, which contains the 2-character abbreviation for
+# the state name. Hospitals that do not have data on a particular outcome should be excluded from the set of
+# hospitals when deciding the rankings.
+
+# Handling ties. The rankall function should handle ties in the 30-day mortality rates in the same way
+# that the rankhospital function handles ties.
+
+# NOTE: For the purpose of this part of the assignment (and for efficiency), your function should NOT call
+# the rankhospital function from the previous section.
+# The function should check the validity of its arguments. If an invalid outcome value is passed to rankall,
+# the function should throw an error via the stop function with the exact message "invalid outcome". The num
+# variable can take values "best", "worst", or an integer indicating the ranking (smaller numbers are better).
+# If the number given by num is larger than the number of hospitals in that state, then the function should
+# return NA.
+
+# Here is some sample output from the function.
+
+# > head(rankall("heart attack", 20), 10)
+
+#                              hospital state
+# AK                               <NA>    AK
+# AL     D W MCMILLAN MEMORIAL HOSPITAL    AL
+# AR  ARKANSAS METHODIST MEDICAL CENTER    AR
+# AZ JOHN C LINCOLN DEER VALLEY HOSPITAL   AZ
+# CA              SHERMAN OAKS HOSPITAL    CA
+# CO           SKY RIDGE MEDICAL CENTER    CO
+# CT            MIDSTATE MEDICAL CENTER    CT
+# DC                               <NA>    DC
+# DE                               <NA>    DE
+# FL     SOUTH FLORIDA BAPTIST HOSPITAL    FL
+
+# > tail(rankall("pneumonia", "worst"), 3)
+
+#                                      hospital state
+# WI MAYO CLINIC HEALTH SYSTEM - NORTHLAND, INC    WI
+# WV                     PLATEAU MEDICAL CENTER    WV
+# WY           NORTH BIG HORN HOSPITAL DISTRICT    WY
+
+# > tail(rankall("heart failure"), 10)
+
+#                                                             hospital state
+# TN                         WELLMONT HAWKINS COUNTY MEMORIAL HOSPITAL    TN
+# TX                                        FORT DUNCAN MEDICAL CENTER    TX
+# UT VA SALT LAKE CITY HEALTHCARE - GEORGE E. WAHLEN VA MEDICAL CENTER    UT
+# VA                                          SENTARA POTOMAC HOSPITAL    VA
+# VI                            GOV JUAN F LUIS HOSPITAL & MEDICAL CTR    VI
+# VT                                              SPRINGFIELD HOSPITAL    VT
+# WA                                         HARBORVIEW MEDICAL CENTER    WA
+# WI                                    AURORA ST LUKES MEDICAL CENTER    WI
+# WV                                         FAIRMONT GENERAL HOSPITAL    WV
+# WY                                        CHEYENNE VA MEDICAL CENTER    WY
 
 
+
+library(data.table)
+library(dplyr)
+
+rankall <- function(outcome, num = "best") {
+
+        # check if arguments are valid
+        outcomes <- c("heart attack", "heart failure", "pneumonia")
+        if (!outcome %in% outcomes) {
+                stop("invalid outcome")
+        }
+        extremes <- c('best', 'worst')
+        if (!num %in% extremes & !is.numeric(num)) {
+                stop("The input for hospital rank must be 'best', 'worst' or a number")
+        }
+        
+        # read the files into a dataframe
+        df <- fread("outcome-of-care-measures.csv", select = c(2, 7, 11, 17, 23))
+        
+        # change the column names so they are more concise
+        colnames(df) <- c("Hospital", "State", "heart attack", "heart failure", "pneumonia")
+        
+        # change all instances of 'Not Available' to <NA>
+        df[df == "Not Available"] <- NA
+        
+        # coerce the outcome columns from character to numeric (N.B. requires dplyr)
+        df <- df %>% mutate_at(c('heart attack', 'heart failure', 'pneumonia'), as.numeric)
+
+        ## create empty dataframe to store values read from files
+        result <- data.frame(hospital = character(), state = character())
+        
+        # create a vector of the state codes included in the dataset
+        state_codes <- c("AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "GA",
+                         "GU", "HI", "IA", "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD",
+                         "ME", "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", "NH", "NJ",
+                         "NM", "NV", "NY", "OH", "OK", "OR", "PA", "PR", "RI", "SC", "SD",
+                         "TN", "TX", "UT", "VA", "VI", "VT", "WA", "WI", "WV", "WY")
+
+                ## loop over the state codes
+        for (i in seq_along(state_codes)) {
+                
+                # filter the dataframe by the inputted state and outcome
+                sh <- select(filter(df, State == state_codes[i]), c(Hospital, State, all_of(outcome)))
+                
+                # filter out the NAs
+                good <- complete.cases(sh)
+                sh_clean <- sh[good, ]
+                
+                # rank the selected state hospitals by outcome and alphabetically (to handle ties)
+                sh_ranked <- arrange(sh_clean, sh_clean[, 3], sh_clean[, 1])
+                
+                # handle the rank argument for 'best'
+                if(num == "best") {
+                        num <- 1
+                }
+                # handle the rank argument for 'worst' by getting the last row of the dataframe
+                # N.B num must be stored in a new variable (rnk) otherwise the condition will be skipped
+                # on the second run through the loop
+                if(num == "worst") {
+                        rnk <- nrow(sh_ranked)
+                        output <- c(sh_ranked[rnk, 1], sh_ranked[rnk, 2])
+                }
+                # if rank argument is out of range 
+                else if (num > nrow(sh_ranked)) {
+                        # select the hospital name and state and store in a vector
+                        output <- c(sh_ranked[num, 1], sh_ranked[1, 2])
+                }
+                else {
+                        output <- c(sh_ranked[num, 1], sh_ranked[num, 2])
+                }        
+                # add the data to the dataframe
+                result = rbind(result, output)
+        }
+        
+        ## Return the specified dataframe
+        result
+}
+
+# Notes ###########################
+
+# When an invalid argument is passed to the 'rankhospital' function the stop() function is correctly executed.
+# However, the system enters debugging mode ... I would like to know how to avoid this.
