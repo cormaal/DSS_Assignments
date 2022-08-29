@@ -409,3 +409,20 @@ rankall <- function(outcome, num = "best") {
 
 # When an invalid argument is passed to the 'rankhospital' function the stop() function is correctly executed.
 # However, the system enters debugging mode ... I would like to know how to avoid this.
+
+
+# CLEAN UP #################################################
+
+# Clear environment
+rm(list = ls()) 
+
+# Clear packages
+p_unload(all)  # Remove all add-ons
+
+# Clear plots
+dev.off()  # But only if there IS a plot
+
+# Clear console
+cat("\014")  # ctrl+L
+
+# Clear mind :)
