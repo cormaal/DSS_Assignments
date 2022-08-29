@@ -46,6 +46,21 @@ library(fs)
 # in the 'directory' argument and returns the mean of the pollutant across all of the monitors,
 # ignoring any missing values coded as NA.
 
+# Sample output
+
+# pollutantmean("specdata", "sulfate", 1:10)
+# [1] 4.064128
+
+# pollutantmean("specdata", "nitrate", 70:72)
+# [1] 1.706047
+
+# pollutantmean("specdata", "sulfate", 34)
+# [1] 1.477143
+
+# pollutantmean("specdata", "nitrate")
+# [1] 1.702932
+
+
 pollutantmean <- function(directory, pollutant, id = 1:332) {
   
     ## create a list of all file paths in the directory
@@ -87,6 +102,24 @@ pollutantmean <- function(directory, pollutant, id = 1:332) {
 # Write a function that reads a directory full of files and reports the number of completely
 # observed cases in each data file. The function should return a data frame where the first column
 # is the name of the file and the second column is the number of complete cases.
+
+# Sample output
+
+# cc <- complete("specdata", c(6, 10, 20, 34, 100, 200, 310))
+# print(cc$nobs)
+# [1] 228 148 124 165 104 460 232
+
+# cc <- complete("specdata", 54)
+# print(cc$nobs)
+# [1] 219
+
+# RNGversion("3.5.1")  
+# set.seed(42)
+# cc <- complete("specdata", 332:1)
+# use <- sample(332, 10)
+# print(cc[use, "nobs"])
+# [1] 711 135  74 445 178  73  49   0 687 237
+
 
 complete <- function(directory, id = 1:332) {
   
@@ -130,6 +163,33 @@ complete <- function(directory, id = 1:332) {
 # of completely observed cases (on all variables) is greater than the threshold. The function should
 # return a vector of correlations for the monitors that meet the threshold requirement. If no monitors
 # meet the threshold requirement, then the function should return a numeric vector of length 0.
+
+# Sample output
+
+# cr <- corr("specdata")                
+# cr <- sort(cr)   
+# RNGversion("3.5.1")
+# set.seed(868)                
+# out <- round(cr[sample(length(cr), 5)], 4)
+# print(out)
+# [1]  0.2688  0.1127 -0.0085  0.4586  0.0447
+
+# cr <- corr("specdata", 129)                
+# cr <- sort(cr)                
+# n <- length(cr)    
+# RNGversion("3.5.1")
+# set.seed(197)                
+# out <- c(n, round(cr[sample(n, 5)], 4))
+# print(out)
+# [1] 243.0000   0.2540   0.0504  -0.1462  -0.1680   0.5969
+
+# cr <- corr("specdata", 2000)                
+# n <- length(cr)                
+# cr <- corr("specdata", 1000)                
+# cr <- sort(cr)
+# print(c(n, round(cr, 4)))
+# [1]  0.0000 -0.0190  0.0419  0.1901
+
 
 corr <- function(directory, threshold = 0) {
     

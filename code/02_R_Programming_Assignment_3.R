@@ -36,7 +36,7 @@
 
 # Read the outcome data into R via the read.csv function and look at the first few rows.
 
-outcome <- read.csv("outcome-of-care-measures.csv", colClasses = "character")
+outcome <- read.csv("./data/outcome-of-care-measures.csv", colClasses = "character")
 head(outcome)
 
 # There are many columns in this dataset. You can see how many by typing ncol(outcome) (you can see
@@ -117,7 +117,7 @@ best <- function(state, outcome) {
         }
         
         # read in the columns with hospital name, state code and the three outcomes (N.B. requires data.table)
-        df <- fread("outcome-of-care-measures.csv", select = c(2, 7, 11, 17, 23))
+        df <- fread("./data/outcome-of-care-measures.csv", select = c(2, 7, 11, 17, 23))
         
         # change the column names so they are more concise
         colnames(df) <- c("Hospital", "State", "heart attack", "heart failure", "pneumonia")
@@ -219,7 +219,7 @@ rankhospital <- function(state, outcome, num = "best") {
         }
 
         # read in the columns with hospital name, state code and the three outcomes (N.B. requires data.table)
-        df <- fread("outcome-of-care-measures.csv", select = c(2, 7, 11, 17, 23))
+        df <- fread("./data/outcome-of-care-measures.csv", select = c(2, 7, 11, 17, 23))
         
         # change the column names so they are more concise
         colnames(df) <- c("Hospital", "State", "heart attack", "heart failure", "pneumonia")
@@ -344,7 +344,7 @@ rankall <- function(outcome, num = "best") {
         }
         
         # read the files into a dataframe
-        df <- fread("outcome-of-care-measures.csv", select = c(2, 7, 11, 17, 23))
+        df <- fread("./data/outcome-of-care-measures.csv", select = c(2, 7, 11, 17, 23))
         
         # change the column names so they are more concise
         colnames(df) <- c("Hospital", "State", "heart attack", "heart failure", "pneumonia")
