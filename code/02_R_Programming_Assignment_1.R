@@ -91,7 +91,7 @@ pollutantmean <- function(directory, pollutant, id = 1:332) {
         poll_data <- c(poll_data, poll_no_na)
     }
     
-    ## fiind the mean of the relevant pollutant data
+    ## find the mean of the relevant pollutant data
     mean(poll_data)
 }
 
