@@ -1,0 +1,294 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={CodeBook},
+  pdfauthor={Alexander Cormack},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{CodeBook}
+\author{Alexander Cormack}
+\date{2022-11-01}
+
+\begin{document}
+\maketitle
+
+\hypertarget{the-source-data}{%
+\section{The Source Data}\label{the-source-data}}
+
+The source data used for this assignment consists essentially of seven
+files
+
+\hypertarget{features.txt}{%
+\subsubsection{features.txt}\label{features.txt}}
+
+The file contains a dataframe with 561 observations and 2 variables. V1
+is an integer variable containing the integers from 1 to 561 in
+ascending order V2 is a character vector listing all of the features
+measured in the Samsung Galaxy S smartphone accelerometer trial. The
+``features.info.txt'' file contains the following information about the
+features measured.
+
+\hypertarget{feature-selection}{%
+\section{Feature Selection}\label{feature-selection}}
+
+The features selected for this database come from the accelerometer and
+gyroscope 3-axial raw signals tAcc-XYZ and tGyro-XYZ. These time domain
+signals (prefix `t' to denote time) were captured at a constant rate of
+50 Hz. Then they were filtered using a median filter and a 3rd order low
+pass Butterworth filter with a corner frequency of 20 Hz to remove
+noise. Similarly, the acceleration signal was then separated into body
+and gravity acceleration signals (tBodyAcc-XYZ and tGravityAcc-XYZ)
+using another low pass Butterworth filter with a corner frequency of 0.3
+Hz.
+
+Subsequently, the body linear acceleration and angular velocity were
+derived in time to obtain Jerk signals (tBodyAccJerk-XYZ and
+tBodyGyroJerk-XYZ). Also the magnitude of these three-dimensional
+signals were calculated using the Euclidean norm (tBodyAccMag,
+tGravityAccMag, tBodyAccJerkMag, tBodyGyroMag, tBodyGyroJerkMag).
+
+Finally a Fast Fourier Transform (FFT) was applied to some of these
+signals producing fBodyAcc-XYZ, fBodyAccJerk-XYZ, fBodyGyro-XYZ,
+fBodyAccJerkMag, fBodyGyroMag, fBodyGyroJerkMag. (Note the `f' to
+indicate frequency domain signals).
+
+These signals were used to estimate variables of the feature vector for
+each pattern:\\
+`-XYZ' is used to denote 3-axial signals in the X, Y and Z directions.
+
+tBodyAcc-XYZ tGravityAcc-XYZ tBodyAccJerk-XYZ tBodyGyro-XYZ
+tBodyGyroJerk-XYZ tBodyAccMag tGravityAccMag tBodyAccJerkMag
+tBodyGyroMag tBodyGyroJerkMag fBodyAcc-XYZ fBodyAccJerk-XYZ
+fBodyGyro-XYZ fBodyAccMag fBodyAccJerkMag fBodyGyroMag fBodyGyroJerkMag
+
+The set of variables that were estimated from these signals are:
+
+mean(): Mean value std(): Standard deviation mad(): Median absolute
+deviation max(): Largest value in array min(): Smallest value in array
+sma(): Signal magnitude area energy(): Energy measure. Sum of the
+squares divided by the number of values. iqr(): Interquartile range
+entropy(): Signal entropy arCoeff(): Autorregresion coefficients with
+Burg order equal to 4 correlation(): correlation coefficient between two
+signals maxInds(): index of the frequency component with largest
+magnitude meanFreq(): Weighted average of the frequency components to
+obtain a mean frequency skewness(): skewness of the frequency domain
+signal kurtosis(): kurtosis of the frequency domain signal
+bandsEnergy(): Energy of a frequency interval within the 64 bins of the
+FFT of each window. angle(): Angle between to vectors.
+
+Additional vectors obtained by averaging the signals in a signal window
+sample. These are used on the angle() variable:
+
+gravityMean tBodyAccMean tBodyAccJerkMean tBodyGyroMean
+tBodyGyroJerkMean
+
+The complete list of variables of each feature vector is available in
+`features.txt'
+
+\hypertarget{subjects_test.txt}{%
+\subsubsection{subjects\_test.txt}\label{subjects_test.txt}}
+
+The file contains a dataframe with 2947 observations and 1 variable. V1
+is an integer variable representing the subjects for which measurements
+were made in the test pool. The file contains the following unique
+values:
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule()
+V1 & n \\
+\midrule()
+\endhead
+2 & 302 \\
+4 & 317 \\
+9 & 288 \\
+10 & 294 \\
+12 & 320 \\
+13 & 327 \\
+18 & 364 \\
+20 & 354 \\
+24 & 381 \\
+\bottomrule()
+\end{longtable}
+
+\hypertarget{subjects_train.txt}{%
+\subsubsection{subjects\_train.txt}\label{subjects_train.txt}}
+
+The file contains a dataframe with 7352 observations and 1 variable. V1
+is an integer variable representing the subjects for which measurements
+were made in the train pool. The file contains the following unique
+values:
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule()
+V1 & n \\
+\midrule()
+\endhead
+1 & 347 \\
+3 & 341 \\
+4 & 302 \\
+6 & 325 \\
+7 & 308 \\
+8 & 281 \\
+11 & 316 \\
+14 & 323 \\
+15 & 328 \\
+16 & 366 \\
+17 & 368 \\
+19 & 360 \\
+21 & 408 \\
+22 & 321 \\
+23 & 372 \\
+25 & 409 \\
+26 & 392 \\
+27 & 376 \\
+28 & 382 \\
+29 & 344 \\
+30 & 383 \\
+\bottomrule()
+\end{longtable}
+
+\hypertarget{y_test.txt}{%
+\subsubsection{y\_test.txt}\label{y_test.txt}}
+
+The file contains a dataframe with 2947 observations and 1 variable. V1
+is an integer variable (1-6) representing the activities for which
+measurements were made in the test pool.
+
+The ``activity\_labels.txt'' maps the integer values to the specfic
+activities:
+
+1 WALKING 2 WALKING\_UPSTAIRS 3 WALKING\_DOWNSTAIRS 4 SITTING 5 STANDING
+6 LAYING
+
+The file contains the following unique values:
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule()
+V1 & n \\
+\midrule()
+\endhead
+1 & 496 \\
+2 & 471 \\
+3 & 420 \\
+4 & 491 \\
+5 & 532 \\
+6 & 537 \\
+\bottomrule()
+\end{longtable}
+
+\hypertarget{y_train.txt}{%
+\subsubsection{y\_train.txt}\label{y_train.txt}}
+
+The file contains a dataframe with 7352 observations and 1 variable. V1
+is an integer variable (1-6) representing the activities for which
+measurements were made in the train pool.
+
+The ``activity\_labels.txt'' maps the integer values to the specfic
+activities:
+
+1 WALKING 2 WALKING\_UPSTAIRS 3 WALKING\_DOWNSTAIRS 4 SITTING 5 STANDING
+6 LAYING
+
+The file contains the following unique values:
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule()
+V1 & n \\
+\midrule()
+\endhead
+1 & 1226 \\
+2 & 1073 \\
+3 & 986 \\
+4 & 1286 \\
+5 & 1374 \\
+6 & 1407 \\
+\bottomrule()
+\end{longtable}
+
+\hypertarget{x_test.txt}{%
+\subsubsection{X\_test.txt}\label{x_test.txt}}
+
+The file contains a dataframe with 2947 observations and 561 variables.
+The variables are all numeric floats ranging from 1 to -1 each with 9
+decimal places. The variables map to the ``features.txt file'' above.
+The observations map to the ``subject.txt'' and ``activity.txt'' files
+above.
+
+\hypertarget{x_train.txt}{%
+\subsubsection{X\_train.txt}\label{x_train.txt}}
+
+The file contains a dataframe with 2947 observations and 561 variables.
+The variables are all numeric floats ranging from 1 to -1 each with 9
+decimal places. The variables map to the ``features.txt file'' above.
+The observations map to the ``subject.txt'' and ``activity.txt'' files
+above.
+
+\end{document}
