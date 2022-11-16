@@ -7,7 +7,7 @@ library(dplyr)
 ## I deleted several hundred thousand lines from the source file to be able to push it to my Github repo.
 
 ## I first inspected the source file with Notepad++ and identified the data required for this project (i.e. rows 66638-69518).
-## Lines 17-18 read in the first line and creates a vector with the variable names.
+## Lines 17-18 read in the first line and create a vector with the variable names.
 ## Line 19 creates a dataframe by reading in the required data and separating the columns by the designated separator.
 ## The variable names created in line 18 are added as column names.
 ## Line 20 adds a new "datetime" column that pastes the values of the Date and Time columns together.
