@@ -24,7 +24,7 @@ hpc <- read.table("./data/household_power_consumption.txt", skip = 66637, nrows 
 
 ## Line 29 opens the file device with specified file name and dimensions
 ## Line 31 plots the histogram with the specific colour, title and x axis label
-## Line 33 explicily closes the graphics device
+## Line 33 explicitly closes the graphics device
 
 png(filename = "./output/plot1.png", width = 480, height = 480)
 
@@ -35,7 +35,7 @@ dev.off()
 
 ## Line 40 opens the file device with specified file name and dimensions
 ## Line 42 plots the line graph (type = "l") with the default colour and the specific y axis label
-## Line 44 explicily closes the graphics device
+## Line 44 explicitly closes the graphics device
 
 png(filename = "./output/plot2.png", width = 480, height = 480)
 
@@ -49,7 +49,7 @@ dev.off()
 ## Line 57 adds the second line with the specific colour and line type
 ## Line 58 adds the third line with the specific colour and line type
 ## Line 59 adds the legend in the appropriate place, with the specific line types and colours and the appropriate legends
-## Line 61 explicily closes the graphics device
+## Line 61 explicitly closes the graphics device
 
 png(filename = "./output/plot3.png", width = 480, height = 480)
 
@@ -67,7 +67,7 @@ dev.off()
 ## Line 79 plots the second line graph (top right)
 ## Lines 81-84 plot the third line graph (bottom left)
 ## Line 86 plots the fourth line graph (bottom right)
-## Line 86 explicily closes the graphics device
+## Line 86 explicitly closes the graphics device
 ## Line 88 returns the graphics device to the 1x1 display
 
 png(filename = "./output/plot4.png", width = 480, height = 480)
