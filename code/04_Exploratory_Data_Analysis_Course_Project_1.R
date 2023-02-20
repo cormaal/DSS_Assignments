@@ -26,7 +26,7 @@ hpc <- read.table("./data/household_power_consumption.txt", skip = 66637, nrows 
 ## Line 31 plots the histogram with the specific colour, title and x axis label
 ## Line 33 explicitly closes the graphics device
 
-png(filename = "./output/plot1.png", width = 480, height = 480)
+png(filename = "./output1/plot1.png", width = 480, height = 480)
 
 with(hpc, hist(Global_active_power, col = "red", main = "Global Active Power", xlab = "Global Active Power (kilowatts)"))
 
@@ -37,7 +37,7 @@ dev.off()
 ## Line 42 plots the line graph (type = "l") with the default colour and the specific y axis label
 ## Line 44 explicitly closes the graphics device
 
-png(filename = "./output/plot2.png", width = 480, height = 480)
+png(filename = "./output1/plot2.png", width = 480, height = 480)
 
 with(hpc, plot(datetime, Global_active_power, type = "l", xlab = "", ylab = "Global Active Power (kilowatts)"))
 
@@ -51,7 +51,7 @@ dev.off()
 ## Line 59 adds the legend in the appropriate place, with the specific line types and colours and the appropriate legends
 ## Line 61 explicitly closes the graphics device
 
-png(filename = "./output/plot3.png", width = 480, height = 480)
+png(filename = "./output1/plot3.png", width = 480, height = 480)
 
 with(hpc, plot(datetime, Sub_metering_1, type = "l", xlab = "", ylab = "Energy sub metering", col = "black", lty = 1))
 with(hpc, lines(datetime, Sub_metering_2, col = "red", lty = 1))
@@ -70,7 +70,7 @@ dev.off()
 ## Line 86 explicitly closes the graphics device
 ## Line 88 returns the graphics device to the 1x1 display
 
-png(filename = "./output/plot4.png", width = 480, height = 480)
+png(filename = "./output1/plot4.png", width = 480, height = 480)
 
 par(mfrow = c(2, 2))
 
