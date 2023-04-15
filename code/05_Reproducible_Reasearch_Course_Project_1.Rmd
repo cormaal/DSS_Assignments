@@ -168,7 +168,7 @@ library(ggplot2)
 
 ## Loading and preprocessing the data 
 
-Here we download, unzip and list the files contained in the zip file
+Here we download and list the contents of the zip file.
 
 ```{r download and list files}
 
@@ -182,7 +182,7 @@ unzip("./data/05_assignment1_data.zip", list = TRUE)
 Next we unzip and read in the dataset into an R dataframe
 
 ```{r unzip and read}
-activity_df <- read_csv(unzip("./data/05_assignment1_data.zip", "activity.csv"))
+activity_df <- read_csv(unzip("./data/05_assignment1_data.zip", "activity.csv", exdir = "./data"))
 ```
 
 ## What is the mean total number of steps taken per day?

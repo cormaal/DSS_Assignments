@@ -574,8 +574,7 @@ library(dplyr)</code></pre>
 </div>
 <div id="loading-and-preprocessing-the-data" class="section level2">
 <h2>Loading and preprocessing the data</h2>
-<p>Here we download, unzip and list the files contained in the zip
-file</p>
+<p>Here we download and list the contents of the zip file.</p>
 <pre class="r"><code>url &lt;- &quot;https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip&quot;
 destfile &lt;- &quot;./data/05_assignment1_data.zip&quot;
 download.file(url, destfile)
@@ -583,7 +582,7 @@ unzip(&quot;./data/05_assignment1_data.zip&quot;, list = TRUE)</code></pre>
 <pre><code>##           Name Length                Date
 ## 1 activity.csv 350829 2014-02-11 10:08:00</code></pre>
 <p>Next we unzip and read in the dataset into an R dataframe</p>
-<pre class="r"><code>activity_df &lt;- read_csv(unzip(&quot;./data/05_assignment1_data.zip&quot;, &quot;activity.csv&quot;))</code></pre>
+<pre class="r"><code>activity_df &lt;- read_csv(unzip(&quot;./data/05_assignment1_data.zip&quot;, &quot;activity.csv&quot;, exdir = &quot;./data&quot;))</code></pre>
 <pre><code>## Rows: 17568 Columns: 3
 ## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
