@@ -159,7 +159,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Let's also load all of the libraries the we will be using for this assignment.
 
-```{r}
+```{r load libraries}
 library(readr)
 library(dplyr)
 library(ggplot2)
@@ -198,6 +198,8 @@ head(activity_df)
 
 Now let's calculate the total number of steps taken each day.
 
+The following code groups the data by date and then calculates the total number of steps for each day, producing a dataframe with 61 rows (dates from 1 October 2012 to 30 November 2012) and two columns (dates and steps).
+
 ```{r total steps}
 steps_day <- activity_df %>% 
         group_by(date) %>% 
@@ -207,15 +209,17 @@ steps_day <- activity_df %>%
 steps_day
 ```
 
+
+
 Here we plot the histogram of the total number of steps taken each day.
 
 ```{r histogram total steps per day}
-ggplot(steps_day, aes(x=steps)) + geom_histogram(bins = 20)
+ggplot(steps_day, aes(x=steps)) + geom_histogram(bins = 20, color = "black", fill = "steelblue") + ggtitle("Distribution of total steps per day")
 ```
 
 The histogram shows a fairly normal distribution around a total of 10,000 steps per day.
 
-Here we simply use the summary function to calculate the mean and the median of the total number of steps taken per day.
+Now we simply use the summary function to calculate the mean and the median of the total number of steps taken per day.
 
 ```{r mean and meadian total steps per day}
 summary(steps_day$steps)
@@ -228,6 +232,27 @@ As expected, the mean of 10766 and the median of 10765 confirm the data expresse
 
 ## What is the average daily activity pattern?
 
+
+The following code groups the data by interval and then calculates the average number of steps for each interval, producing a dataframe with 288 rows (number of 5-minute intervals in each day) and two columns (interval and steps).
+
+Then we find the 5-minute interval with the maximum average number of steps.
+
+```{r average steps per interval}
+by_interval <- activity_df %>%
+        group_by(interval) %>%
+        summarise(
+                steps = mean(steps, na.rm = TRUE)
+        )
+by_interval[which.max(by_interval$steps), ]
+```
+
+As we can see the interval with the maximum average number of steps (206 steps) occurred at 835 minutes, i.e. on average the subject was most active between 1:55 and 2:00 pm across the two months in question.
+
+In the time series chart below we can clearly see how the subject was most active on average around the early afternoon period of 2 pm.
+
+```{r plot average steps per interval}
+ggplot(by_interval, aes(x=interval, y=steps)) + geom_line() + ggtitle("Average steps per 5-minute interval")
+```
 
 
 ## Imputing missing values
