@@ -3,6 +3,7 @@ title: "05_Reproducible_Reasearch_Course_Project_1"
 author: "Alexander Cormack"
 date: "2023-04-15"
 output: html_document
+keep_md: TRUE
 ---
 
 # Assignment Instructions
