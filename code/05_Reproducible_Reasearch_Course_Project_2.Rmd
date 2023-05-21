@@ -151,44 +151,209 @@ So the columns of interest are EVTYPE, FATALITIES, INJURIES, PROPDMG, PROPDMGEXP
 
 First up is to check for anomalies (e.g. duplicate values) in the EVTYPE column.
 
-```{r check EVTYPE column}
+```{r check EVTYPE column, results = "hide"}
 sort(unique(storm_data$EVTYPE))
 ```
 
-The National Weather Service Storm Data Documentation lists 48 event types, whereas the data set has 985 unique values. Some of the causes include extra white space, lowercase/uppercase duplicates, sub-classifications (e.g. WET MICROBURST should be classified as THUNDERSTORM WIND), spelling errors or outright anomalies (see for example the many instances of "Summary").
+The National Weather Service Storm Data Documentation lists 48 event types, whereas the data set has 985 unique values. For the sake of space the results of the above code are not displayed. However, they shohw that some of the causes include extra white space, lowercase/uppercase duplicates, sub-classifications (e.g. WET MICROBURST should be classified as THUNDERSTORM WIND), spelling errors or outright anomalies (see for example the many instances of "Summary").
 
 The code below deals with the duplicates.
 
-```{r remove duplicates, message = FALSE}
-storm_data$EVTYPE <- trimws(storm_data$EVTYPE) ## trim leading and trailing whitespace
-storm_data$EVTYPE <- gsub("\\s+"," ", storm_data$EVTYPE)  ## remove extra whitespace between words
+```{r remove duplicates, cache = TRUE, message = FALSE}
+storm_data$EVTYPE <- trimws(storm_data$EVTYPE) ## trim leading and trailing white space
+storm_data$EVTYPE <- gsub("\\s+"," ", storm_data$EVTYPE)  ## remove extra whites pace between words
 storm_data$EVTYPE <- toupper(storm_data$EVTYPE)  ## convert all strings to uppercase
-storm_data$EVTYPE[storm_data$EVTYPE == "ABNORMAL WARMTH"] <- "HEAT"  ## abnormal warmth likely falls under the classification heat
-
-storm_data$EVTYPE[storm_data$EVTYPE == "ABNORMALLY DRY"] <- "DROUGHT"  ## abnormally dry likely falls under the classification drought
-
-storm_data$EVTYPE[storm_data$EVTYPE == "ABNORMALLY WET"] <- "HEAVY RAIN"  ## abnormally wet likely falls under the classification heat
-
-storm_data$EVTYPE[storm_data$EVTYPE == "ACCUMULTAED SNOWFALL"] <- "HEAVY SNOW"  ## accumulated snow likely falls under the classification heavy snow
-
-storm_data$EVTYPE[storm_data$EVTYPE == "AGRICULTURAL FREEZE"] <- "FROST/FREEZE"  ## agricultural freeze likely falls under the classification frost/freeze
 
 
+## The following code reclassifies many of the event types into one of the 48 categories. Misspellings are also taken into account
+
+avalanche <- c("AVALANCH")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% avalanche, "AVALANCHE"))
+
+blizzard <- c("BLIZZARD AND EXTREME WIND CHIL", "BLIZZARD AND HEAVY SNOW", "BLIZZARD SUMMARY", 
+                     "BLIZZARD WEATHER","BLIZZARD/FREEZING RAIN", "BLIZZARD/HEAVY SNOW", "BLIZZARD/HIGH WIND", 
+                     "BLIZZARD/WINTER STORM", "BLOWING SNOW", "BLOWING SNOW- EXTREME WIND CHI", 
+                     "BLOWING SNOW & EXTREME WIND CH", "BLOWING SNOW/EXTREME WIND CHIL", "GROUND BLIZZARD")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% blizzard, "BLIZZARD"))
 
 
+coastal_flood <- c("ASTRONOMICAL HIGH TIDE", "BEACH EROSIN", "BEACH EROSION", "BEACH EROSION/COASTAL FLOOD", 
+                      "BEACH FLOOD", "BLOW-OUT TIDE", "BLOW-OUT TIDES", "BREAKUP FLOODING", "COASTAL EROSION", 
+                      "COASTAL FLOODING", "COASTAL FLOODING/EROSION", "COASTAL/TIDAL FLOOD", "COASTALFLOOD", 
+                      "CSTL FLOODING/EROSION", "EROSION/CSTL FLOOD", "HIGH TIDES", "HIGH WATER")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% coastal_flood, "COASTAL FLOOD"))
 
+cold_wind_chill <- c("COLD", "COLD AND FROST", "COLD AND SNOW", "COLD AND WET CONDITIONS", "COLD TEMPERATURE", 
+                        "COLD TEMPERATURES", "COLD WAVE", "COLD WEATHER", "COLD WIND CHILL TEMPERATURES", 
+                        "COLD/WINDS", "COOL AND WET", "COOL SPELL", "EXTENDED COLD")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% cold_wind_chill, "COLD/WIND CHILL"))
+
+
+dense_fog <- c("FOG", "FOG AND COLD TEMPERATURES")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% dense_fog, "FOG"))
+
+drought <- c("ABNORMALLY DRY", "BELOW NORMAL PRECIPITATION", "DRIEST MONTH", "DROUGHT/EXCESSIVE HEAT", "DRY", 
+                "DRY CONDITIONS", "DRY HOT WEATHER", "DRY PATTERN", "DRY SPELL", "DRY WEATHER", "DRYNESS", 
+                "EXCESSIVELY DRY")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% drought, "DROUGHT"))
+
+dust_devil <- c("DUST DEVEL", "DUST DEVIL WATERSPOUT")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% dust_devil, "DUST DEVIL"))
+
+dust_storm <- c("BLOWING DUST", "DUST STORM/HIGH WINDS", "DUSTSTORM")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% drought, "DUST STORM"))
+
+excessive_heat <- c("EXCESSIVE", "EXCESSIVE HEAT/DROUGHT", "EXTREME HEAT")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% excessive_heat, "EXCESSIVE HEAT"))
+
+extreme_cold <- c("BITTER WIND CHILL", "BITTER WIND CHILL TEMPERATURES", "EXCESSIVE COLD", "EXTREME COLD", 
+                  "EXTREME WIND CHILL", "EXTREME WIND CHILL/BLOWING SNO", "EXTREME WIND CHILLS", "EXTREME WINDCHILL", 
+                  "EXTREME WINDCHILL TEMPERATURES", "EXTREME/RECORD COLD", "HYPERTHERMIA/EXPOSURE", "HYPOTHERMIA", 
+                  "HYPOTHERMIA/EXPOSURE")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% extreme_cold, "EXTREME COLD/WIND CHILL"))
+
+flash_flood <- c("DAM BREAK", "DAM FAILURE", "FLASH FLOOD - HEAVY RAIN", "FLASH FLOOD FROM ICE JAMS", 
+                    "FLASH FLOOD LANDSLIDES", "FLASH FLOOD WINDS", "FLASH FLOOD/", "FLASH FLOOD/ FLOOD", 
+                    "FLASH FLOOD/ STREET", "FLASH FLOOD/FLOOD", "FLASH FLOOD/HEAVY RAIN", "FLASH FLOOD/LANDSLIDE", 
+                    "FLASH FLOODING", "FLASH FLOODING/FLOOD", "FLASH FLOODING/THUNDERSTORM WI", "FLASH FLOODS", 
+                    "FLASH FLOOODING", "FLOOD FLASH", "FLOOD FLOOD/FLASH", "FLOOD/FLASH", "FLOOD/FLASH FLOOD", 
+                    "FLOOD/FLASH FLOODING", "FLOOD/FLASH/FLOOD", "FLOOD/FLASHFLOOD", "HIGHWAY FLOODING")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% flash_flood, "FLASH FLOOD"))
+
+flood <- c("FLOOD & HEAVY RAIN", "FLOOD WATCH/", "FLOOD/RAIN/WIND", "FLOOD/RAIN/WINDS", "FLOOD/RIVER FLOOD", 
+              "FLOOD/STRONG WIND", "FLOODING", "FLOODING/HEAVY RAIN", "FLOODS")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% flood, "FLOOD"))
+
+freezing_fog <- c("BLACK ICE", "FREEZE", "GLAZE", "GLAZE ICE", "GLAZE/ICE STORM")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% freezing_fog, "FREEZING FOG"))
+
+frost_freeze <- c("AGRICULTURAL FREEZE", "DAMAGING FREEZE", "EARLY FREEZE", "EARLY FROST", "FIRST FROST", "FROST", 
+                     "FROST\\FREEZE", "HARD FREEZE")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% frost_freeze, "FROST/FREEZE"))
+
+funnel_cloud <- c("COLD AIR FUNNEL", "COLD AIR FUNNELS", "FUNNEL", "FUNNEL CLOUD.", "FUNNEL CLOUD/HAIL", "FUNNEL CLOUDS", 
+                     "FUNNELS")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% funnel_cloud, "FUNNEL CLOUD"))
+
+hail <- c("DEEP HAIL", "HAIL 0.75", "HAIL 0.88", "HAIL 075", "HAIL 088", "HAIL 1.00", "HAIL 1.75", "HAIL 1.75)", 
+             "HAIL 100", "HAIL 125", "HAIL 150", "HAIL 175", "HAIL 200", "HAIL 225", "HAIL 275", "HAIL 450", "HAIL 75", 
+             "HAIL 80", "HAIL 88", "HAIL ALOFT", "HAIL DAMAGE", "HAIL FLOODING", "HAIL STORM", "HAILSTORMS")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% hail, "HAIL"))
+
+heat <- c("ABNORMAL WARMTH", "HEAT DROUGHT", "HEAT WAVE", "HEAT WAVE DROUGHT", "HEAT WAVES", "HEAT/DROUGHT", "HEATBURST", 
+             "HIGH TEMPERATURE RECORD", "HOT AND DRY", "HOT PATTERN", "HOT SPELL", "HOT WEATHER", "HOT/DRY PATTERN")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% heat, "HEAT"))
+
+heavy_rain <- c("ABNORMALLY WET", "EARLY RAIN", "EXCESSIVE PRECIPITATION", "EXCESSIVE RAIN", "EXCESSIVE RAINFALL", 
+                   "EXCESSIVE WETNESS", "EXTREMELY WET", "HEAVY MIX", "HEAVY PRECIPATATION", "HEAVY PRECIPITATION", 
+                   "HEAVY RAIN", "HEAVY RAIN AND FLOOD", "HEAVY RAIN AND WIND", "HEAVY RAIN EFFECTS", "HEAVY RAIN/FLOODING", 
+                   "HEAVY RAIN/HIGH SURF", "HEAVY RAIN/LIGHTNING", "HEAVY RAIN/MUDSLIDES/FLOOD", "HEAVY RAIN/SEVERE WEATHER", 
+                   "HEAVY RAIN/SMALL STREAM URBAN", "HEAVY RAIN/SNOW", "HEAVY RAIN/URBAN FLOOD", "HEAVY RAIN/WIND", 
+                   "HEAVY RAIN; URBAN FLOOD WINDS;", "HEAVY RAINFALL", "HEAVY RAINS", "HEAVY RAINS/FLOODING", 
+                   "HEAVY SHOWER", "HEAVY SHOWERS", "HVY RAIN")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% heavy_rain, "HEAVY RAIN"))
+
+heavy_snow <- c("ACCUMULTATED SNOWFALL", "EARLY SNOW", "EARLY SNOWFALL", "EXCESSIVE SNOW", "FALLING SNOW/ICE", 
+                   "FIRST SNOW", "HEAVY LAKE SNOW", "HEAVY SNOW-SQUALLS", "HEAVY SNOW & ICE", "HEAVY SNOW AND", 
+                   "HEAVY SNOW AND HIGH WINDS", "HEAVY SNOW AND ICE", "HEAVY SNOW AND ICE STORM", "HEAVY SNOW AND STRONG WINDS", 
+                   "HEAVY SNOW ANDBLOWING SNOW", "HEAVY SNOW FREEZING RAIN", "HEAVY SNOW SHOWER", "HEAVY SNOW SQUALLS", 
+                   "HEAVY SNOW/BLIZZARD", "HEAVY SNOW/BLIZZARD/AVALANCHE", "HEAVY SNOW/BLOWING SNOW", "HEAVY SNOW/FREEZING RAIN", 
+                   "HEAVY SNOW/HIGH", "HEAVY SNOW/HIGH WIND", "HEAVY SNOW/HIGH WINDS", "HEAVY SNOW/HIGH WINDS & FLOOD", 
+                   "HEAVY SNOW/HIGH WINDS/FREEZING", "HEAVY SNOW/ICE", "HEAVY SNOW/ICE STORM", "HEAVY SNOW/SLEET", 
+                   "HEAVY SNOW/SQUALLS", "HEAVY SNOW/WIND", "HEAVY SNOW/WINTER STORM", "HEAVY SNOWPACK")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% heavy_snow, "HEAVY SNOW"))
+
+high_surf <- c("HAZARDOUS SURF", "HEAVY SEAS", "HEAVY SURF", "HEAVY SURF AND WIND", "HEAVY SURF COASTAL FLOODING", 
+                  "HEAVY SURF/HIGH SURF", "HEAVY SWELLS", "HEAVY WET SNOW", "HIGH", "HIGH SEAS", "HIGH SURF", 
+                  "HIGH SURF ADVISORIES", "HIGH SURF ADVISORY", "HIGH SWELLS", "HIGH WAVES")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% high_surf, "HIGH SURF"))
+
+high_wind <- c("HIGH WIND (G40)", "HIGH WIND 48", "HIGH WIND 63", "HIGH WIND 70", "HIGH WIND AND HEAVY SNOW", 
+                  "HIGH WIND AND HIGH TIDES", "HIGH WIND AND SEAS", "HIGH WIND DAMAGE", "HIGH WIND/ BLIZZARD", 
+                  "HIGH WIND/BLIZZARD", "HIGH WIND/BLIZZARD/FREEZING RA", "HIGH WIND/HEAVY SNOW", "HIGH WIND/LOW WIND CHILL", 
+                  "HIGH WIND/SEAS", "HIGH WIND/WIND CHILL", "HIGH WIND/WIND CHILL/BLIZZARD", "HIGH WINDS", 
+                  "HIGH WINDS 55", "HIGH WINDS 57", "HIGH WINDS 58", "HIGH WINDS 63", "HIGH WINDS 66", "HIGH WINDS 67", 
+                  "HIGH WINDS 73", "HIGH WINDS 76", "HIGH WINDS 80", "HIGH WINDS 82", "HIGH WINDS AND WIND CHILL", 
+                  "HIGH WINDS DUST STORM", "HIGH WINDS HEAVY RAINS", "HIGH WINDS/", "HIGH WINDS/COASTAL FLOOD", 
+                  "HIGH WINDS/COLD", "HIGH WINDS/FLOODING", "HIGH WINDS/HEAVY RAIN", "HIGH WINDS/SNOW")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% high_wind, "HIGH WIND"))
+
+hurricane <- c("HURRICANE-GENERATED SWELLS", "HURRICANE EDOUARD", "HURRICANE EMILY", "HURRICANE ERIN", 
+                  "HURRICANE FELIX", "HURRICANE GORDON", "HURRICANE OPAL", "HURRICANE OPAL/HIGH WINDS", "HURRICANE/TYPHOON")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% hurricane, "HURRICANE"))
+
+sleet <- c("FREEZING DRIZZLE", "FREEZING DRIZZLE AND FREEZING", "FREEZING RAIN", "FREEZING RAIN AND SLEET", 
+              "FREEZING RAIN AND SNOW", "FREEZING RAIN SLEET AND", "FREEZING RAIN SLEET AND LIGHT", "FREEZING RAIN/SLEET", 
+              "FREEZING RAIN/SNOW", "FREEZING SPRAY")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% sleet, "SLEET"))
+
+strong_wind <- c("GUSTY LAKE WIND", "GUSTY WIND", "GUSTY WIND/HAIL", "GUSTY WIND/HVY RAIN", "GUSTY WIND/RAIN", 
+                    "GUSTY WINDS")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% strong_wind, "STRONG WIND"))
+
+thunderstorm_wind <- c("DOWNBURST", "DOWNBURST WINDS", "DRY MICROBURST", "DRY MICROBURST 50", "DRY MICROBURST 53", 
+                          "DRY MICROBURST 58", "DRY MICROBURST 61", "DRY MICROBURST 84", "DRY MICROBURST WINDS", 
+                          "DRY MIRCOBURST WINDS",  "GUSTNADO", "GUSTNADO AND", "GUSTY THUNDERSTORM WIND", 
+                          "GUSTY THUNDERSTORM WINDS", "THUDERSTORM WINDS", "THUNDEERSTORM WINDS", "THUNDERESTORM WINDS", 
+                          "THUNDERSNOW", "THUNDERSNOW SHOWER", "THUNDERSTORM", "THUNDERSTORM DAMAGE", "THUNDERSTORM DAMAGE TO", 
+                          "THUNDERSTORM HAIL", "THUNDERSTORM W INDS", "THUNDERSTORM WIND (G40)", "THUNDERSTORM WIND 50", 
+                          "THUNDERSTORM WIND 52", "THUNDERSTORM WIND 56", "THUNDERSTORM WIND 59", "THUNDERSTORM WIND 59 MPH", 
+                          "THUNDERSTORM WIND 59 MPH.", "THUNDERSTORM WIND 60 MPH", "THUNDERSTORM WIND 65 MPH", 
+                          "THUNDERSTORM WIND 65MPH", "THUNDERSTORM WIND 69", "THUNDERSTORM WIND 98 MPH", "THUNDERSTORM WIND G50", 
+                          "THUNDERSTORM WIND G51", "THUNDERSTORM WIND G52", "THUNDERSTORM WIND G55", "THUNDERSTORM WIND G60", 
+                          "THUNDERSTORM WIND G61", "THUNDERSTORM WIND TREES", "THUNDERSTORM WIND.", "THUNDERSTORM WIND/ TREE", 
+                          "THUNDERSTORM WIND/ TREES", "THUNDERSTORM WIND/AWNING", "THUNDERSTORM WIND/HAIL", 
+                          "THUNDERSTORM WIND/LIGHTNING", "THUNDERSTORM WINDS", "THUNDERSTORM WINDS 13", "THUNDERSTORM WINDS 2", 
+                          "THUNDERSTORM WINDS 50", "THUNDERSTORM WINDS 52", "THUNDERSTORM WINDS 53", "THUNDERSTORM WINDS 60", 
+                          "THUNDERSTORM WINDS 61", "THUNDERSTORM WINDS 62", "THUNDERSTORM WINDS 63 MPH", 
+                          "THUNDERSTORM WINDS AND", "THUNDERSTORM WINDS FUNNEL CLOU", "THUNDERSTORM WINDS G", 
+                          "THUNDERSTORM WINDS G60", "THUNDERSTORM WINDS HAIL", "THUNDERSTORM WINDS HEAVY RAIN", 
+                          "THUNDERSTORM WINDS LE CEN", "THUNDERSTORM WINDS LIGHTNING", "THUNDERSTORM WINDS SMALL STREA", 
+                          "THUNDERSTORM WINDS URBAN FLOOD", "THUNDERSTORM WINDS.", "THUNDERSTORM WINDS/ FLOOD", 
+                          "THUNDERSTORM WINDS/ HAIL", "THUNDERSTORM WINDS/FLASH FLOOD", "THUNDERSTORM WINDS/FLOODING", 
+                          "THUNDERSTORM WINDS/FUNNEL CLOU", "THUNDERSTORM WINDS/HAIL", "THUNDERSTORM WINDS/HEAVY RAIN", 
+                          "THUNDERSTORM WINDS53", "THUNDERSTORM WINDSHAIL", "THUNDERSTORM WINDSS", "THUNDERSTORM WINS", 
+                          "THUNDERSTORMS", "THUNDERSTORMS WIND", "THUNDERSTORMS WINDS", "THUNDERSTORMW", "THUNDERSTORMW 50", 
+                          "THUNDERSTORMW WINDS", "THUNDERSTORMWINDS", "THUNDERSTROM WIND", "THUNDERSTROM WINDS", 
+                          "THUNDERTORM WINDS", "THUNDERTSORM WIND", "THUNDESTORM WINDS", "THUNERSTORM WINDS")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% thunderstorm_wind, "THUNDERSTORM WIND"))
+
+tornado <- c("COLD AIR TORNADO")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% tornado, "TORNADO"))
+
+tropical_storm <- c("COASTAL STORM", "COASTAL SURGE", "COASTALSTORM", "GRADIENT WIND", "GRADIENT WINDS")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% tropical_storm, "TROPICAL STORM"))
+
+wildfire <- c("BRUSH FIRE", "BRUSH FIRES", "FOREST FIRES", "GRASS FIRES")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% wildfire, "WILDFIRE"))
+
+winter_weather <- c("DRIFTING SNOW")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% winter_weather, "WINTER WEATHER"))
+
+
+## The following code drops rows from the dataframe where the event type value is truly anomalous
+
+anomalous_values <- c("?", "APACHE COUNTY", "DROWNING", "SUMMARY AUGUST 10", "SUMMARY AUGUST 11", "SUMMARY AUGUST 17", 
+                      "SUMMARY AUGUST 2-3", "SUMMARY AUGUST 21", "SUMMARY AUGUST 28", "SUMMARY AUGUST 4", 
+                      "SUMMARY AUGUST 7", "SUMMARY AUGUST 9", "SUMMARY JAN 17", "SUMMARY JULY 23-24", "SUMMARY JUNE 18-19", 
+                      "SUMMARY JUNE 5-6", "SUMMARY JUNE 6", "SUMMARY OF APRIL 12", "SUMMARY OF APRIL 13", 
+                      "SUMMARY OF APRIL 21", "SUMMARY OF APRIL 27","SUMMARY OF APRIL 3RD", "SUMMARY OF AUGUST 1", 
+                      "SUMMARY OF JULY 11", "SUMMARY OF JULY 2", "SUMMARY OF JULY 22", "SUMMARY OF JULY 26", 
+                      "SUMMARY OF JULY 29", "SUMMARY OF JULY 3", "SUMMARY OF JUNE 10", "SUMMARY OF JUNE 11", 
+                      "SUMMARY OF JUNE 12", "SUMMARY OF JUNE 13", "SUMMARY OF JUNE 15", "SUMMARY OF JUNE 16", 
+                      "SUMMARY OF JUNE 18", "SUMMARY OF JUNE 23", "SUMMARY OF JUNE 24", "SUMMARY OF JUNE 3", 
+                      "SUMMARY OF JUNE 30", "SUMMARY OF JUNE 4", "SUMMARY OF JUNE 6", "SUMMARY OF MARCH 14", 
+                      "SUMMARY OF MARCH 23", "SUMMARY OF MARCH 24", "SUMMARY OF MARCH 24-25", "SUMMARY OF MARCH 27", 
+                      "SUMMARY OF MARCH 29", "SUMMARY OF MAY 10", "SUMMARY OF MAY 13", "SUMMARY OF MAY 14", 
+                      "SUMMARY OF MAY 22", "SUMMARY OF MAY 22 AM", "SUMMARY OF MAY 22 PM", "SUMMARY OF MAY 26 AM", 
+                      "SUMMARY OF MAY 26 PM", "SUMMARY OF MAY 31 AM", "SUMMARY OF MAY 31 PM", "SUMMARY OF MAY 9-10", 
+                      "SUMMARY SEPT. 25-26", "SUMMARY SEPTEMBER 20", "SUMMARY SEPTEMBER 23", "SUMMARY SEPTEMBER 3", 
+                      "SUMMARY SEPTEMBER 4", "SUMMARY: NOV. 16", "SUMMARY: NOV. 6-7", "SUMMARY: OCT. 20-21", 
+                      "SUMMARY: OCTOBER 31", "SUMMARY: SEPT. 18")
+storm_data <- subset(storm_data, !(EVTYPE %in% anomalous_values))
 
 
 sort(unique(storm_data$EVTYPE))
-```
-
-Here the rows with true anomalous values are dropped.
-
-```{r}
-storm_data_dropped <- subset(storm_data, EVTYPE != "?" &
-                               EVTYPE != "APACHE COUNTY"
-                             )
-sort(unique(storm_data_dropped$EVTYPE))
 ```
 
 
