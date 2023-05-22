@@ -600,11 +600,13 @@ EVTYPE column.</p>
 <pre class="r"><code>sort(unique(storm_data$EVTYPE))</code></pre>
 <p>The National Weather Service Storm Data Documentation lists 48 event
 types, whereas the data set has 985 unique values. For the sake of space
-the results of the above code are not displayed. However, they shohw
-that some of the causes include extra white space, lowercase/uppercase
-duplicates, sub-classifications (e.g. WET MICROBURST should be
-classified as THUNDERSTORM WIND), spelling errors or outright anomalies
-(see for example the many instances of “Summary”).</p>
+the results of the above code are not displayed. However, they show that
+some of the causes include extra white space, lowercase/uppercase
+duplicates, spelling errors or outright anomalies (see for example the
+many instances of “Summary”). The main cause, however, is
+sub-classifications (e.g. WET MICROBURST should be classified as
+THUNDERSTORM WIND), most likely due to changes in classification
+practice over the years.</p>
 <p>The code below deals with the duplicates.</p>
 <pre class="r"><code>storm_data$EVTYPE &lt;- trimws(storm_data$EVTYPE) ## trim leading and trailing white space
 storm_data$EVTYPE &lt;- gsub(&quot;\\s+&quot;,&quot; &quot;, storm_data$EVTYPE)  ## remove extra whites pace between words
@@ -614,396 +616,489 @@ storm_data$EVTYPE &lt;- toupper(storm_data$EVTYPE)  ## convert all strings to up
 ## The following code reclassifies many of the event types into one of the 48 categories. Misspellings are also taken into account
 
 avalanche &lt;- c(&quot;AVALANCH&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% avalanche, &quot;AVALANCHE&quot;))
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% avalanche, &quot;AVALANCHE&quot;))
 
 blizzard &lt;- c(&quot;BLIZZARD AND EXTREME WIND CHIL&quot;, &quot;BLIZZARD AND HEAVY SNOW&quot;, &quot;BLIZZARD SUMMARY&quot;, 
-                     &quot;BLIZZARD WEATHER&quot;,&quot;BLIZZARD/FREEZING RAIN&quot;, &quot;BLIZZARD/HEAVY SNOW&quot;, &quot;BLIZZARD/HIGH WIND&quot;, 
-                     &quot;BLIZZARD/WINTER STORM&quot;, &quot;BLOWING SNOW&quot;, &quot;BLOWING SNOW- EXTREME WIND CHI&quot;, 
-                     &quot;BLOWING SNOW &amp; EXTREME WIND CH&quot;, &quot;BLOWING SNOW/EXTREME WIND CHIL&quot;, &quot;GROUND BLIZZARD&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% blizzard, &quot;BLIZZARD&quot;))
+              &quot;BLIZZARD WEATHER&quot;,&quot;BLIZZARD/FREEZING RAIN&quot;, &quot;BLIZZARD/HEAVY SNOW&quot;, &quot;BLIZZARD/HIGH 
+              WIND&quot;, &quot;BLIZZARD/WINTER STORM&quot;, &quot;BLOWING SNOW&quot;, &quot;BLOWING SNOW- EXTREME WIND CHI&quot;, 
+              &quot;BLOWING SNOW &amp; EXTREME WIND CH&quot;, &quot;BLOWING SNOW/EXTREME WIND CHIL&quot;, &quot;GROUND BLIZZARD&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% blizzard, &quot;BLIZZARD&quot;))
 
 
-coastal_flood &lt;- c(&quot;ASTRONOMICAL HIGH TIDE&quot;, &quot;BEACH EROSIN&quot;, &quot;BEACH EROSION&quot;, &quot;BEACH EROSION/COASTAL FLOOD&quot;, 
-                      &quot;BEACH FLOOD&quot;, &quot;BLOW-OUT TIDE&quot;, &quot;BLOW-OUT TIDES&quot;, &quot;BREAKUP FLOODING&quot;, &quot;COASTAL EROSION&quot;, 
-                      &quot;COASTAL FLOODING&quot;, &quot;COASTAL FLOODING/EROSION&quot;, &quot;COASTAL/TIDAL FLOOD&quot;, &quot;COASTALFLOOD&quot;, 
-                      &quot;CSTL FLOODING/EROSION&quot;, &quot;EROSION/CSTL FLOOD&quot;, &quot;HIGH TIDES&quot;, &quot;HIGH WATER&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% coastal_flood, &quot;COASTAL FLOOD&quot;))
+coastal_flood &lt;- c(&quot;ASTRONOMICAL HIGH TIDE&quot;, &quot;BEACH EROSIN&quot;, &quot;BEACH EROSION&quot;, &quot;BEACH EROSION/COASTAL 
+                   FLOOD&quot;, &quot;BEACH FLOOD&quot;, &quot;BLOW-OUT TIDE&quot;, &quot;BLOW-OUT TIDES&quot;, &quot;BREAKUP FLOODING&quot;, 
+                   &quot;COASTAL EROSION&quot;, &quot;COASTAL FLOODING&quot;, &quot;COASTAL FLOODING/EROSION&quot;, &quot;COASTAL/TIDAL 
+                   FLOOD&quot;, &quot;COASTALFLOOD&quot;, &quot;CSTL FLOODING/EROSION&quot;, &quot;EROSION/CSTL FLOOD&quot;, &quot;HIGH 
+                   TIDES&quot;, &quot;HIGH WATER&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% coastal_flood, &quot;COASTAL FLOOD&quot;))
 
-cold_wind_chill &lt;- c(&quot;COLD&quot;, &quot;COLD AND FROST&quot;, &quot;COLD AND SNOW&quot;, &quot;COLD AND WET CONDITIONS&quot;, &quot;COLD TEMPERATURE&quot;, 
-                        &quot;COLD TEMPERATURES&quot;, &quot;COLD WAVE&quot;, &quot;COLD WEATHER&quot;, &quot;COLD WIND CHILL TEMPERATURES&quot;, 
-                        &quot;COLD/WINDS&quot;, &quot;COOL AND WET&quot;, &quot;COOL SPELL&quot;, &quot;EXTENDED COLD&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% cold_wind_chill, &quot;COLD/WIND CHILL&quot;))
+cold_wind_chill &lt;- c(&quot;COLD&quot;, &quot;COLD AND FROST&quot;, &quot;COLD AND SNOW&quot;, &quot;COLD AND WET CONDITIONS&quot;, &quot;COLD 
+                     TEMPERATURE&quot;, &quot;COLD TEMPERATURES&quot;, &quot;COLD WAVE&quot;, &quot;COLD WEATHER&quot;, &quot;COLD WIND 
+                     CHILL TEMPERATURES&quot;, &quot;COLD/WINDS&quot;, &quot;COOL AND WET&quot;, &quot;COOL SPELL&quot;, &quot;EXTENDED 
+                     COLD&quot;, &quot;LOW TEMPERATURE&quot;, &quot;LOW TEMPERATURE RECORD&quot;, &quot;LOW WIND CHILL&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% cold_wind_chill, &quot;COLD/WIND CHILL&quot;))
 
+debris_flow &lt;- c(&quot;LANDSLIDE&quot;, &quot;LANDSLIDE/URBAN FLOOD&quot;, &quot;LANDSLIDES&quot;, &quot;LANDSLUMP&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% debris_flow, &quot;DEBRIS FLOW&quot;))
 
 dense_fog &lt;- c(&quot;FOG&quot;, &quot;FOG AND COLD TEMPERATURES&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% dense_fog, &quot;FOG&quot;))
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% dense_fog, &quot;FOG&quot;))
 
-drought &lt;- c(&quot;ABNORMALLY DRY&quot;, &quot;BELOW NORMAL PRECIPITATION&quot;, &quot;DRIEST MONTH&quot;, &quot;DROUGHT/EXCESSIVE HEAT&quot;, &quot;DRY&quot;, 
-                &quot;DRY CONDITIONS&quot;, &quot;DRY HOT WEATHER&quot;, &quot;DRY PATTERN&quot;, &quot;DRY SPELL&quot;, &quot;DRY WEATHER&quot;, &quot;DRYNESS&quot;, 
-                &quot;EXCESSIVELY DRY&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% drought, &quot;DROUGHT&quot;))
+drought &lt;- c(&quot;ABNORMALLY DRY&quot;, &quot;BELOW NORMAL PRECIPITATION&quot;, &quot;DRIEST MONTH&quot;, &quot;DROUGHT/EXCESSIVE 
+             HEAT&quot;, &quot;DRY&quot;, &quot;DRY CONDITIONS&quot;, &quot;DRY HOT WEATHER&quot;, &quot;DRY PATTERN&quot;, &quot;DRY SPELL&quot;, &quot;DRY 
+             WEATHER&quot;, &quot;DRYNESS&quot;, &quot;EXCESSIVELY DRY&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% drought, &quot;DROUGHT&quot;))
 
 dust_devil &lt;- c(&quot;DUST DEVEL&quot;, &quot;DUST DEVIL WATERSPOUT&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% dust_devil, &quot;DUST DEVIL&quot;))
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% dust_devil, &quot;DUST DEVIL&quot;))
 
 dust_storm &lt;- c(&quot;BLOWING DUST&quot;, &quot;DUST STORM/HIGH WINDS&quot;, &quot;DUSTSTORM&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% drought, &quot;DUST STORM&quot;))
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% drought, &quot;DUST STORM&quot;))
 
 excessive_heat &lt;- c(&quot;EXCESSIVE&quot;, &quot;EXCESSIVE HEAT/DROUGHT&quot;, &quot;EXTREME HEAT&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% excessive_heat, &quot;EXCESSIVE HEAT&quot;))
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% excessive_heat, &quot;EXCESSIVE HEAT&quot;))
 
-extreme_cold &lt;- c(&quot;BITTER WIND CHILL&quot;, &quot;BITTER WIND CHILL TEMPERATURES&quot;, &quot;EXCESSIVE COLD&quot;, &quot;EXTREME COLD&quot;, 
-                  &quot;EXTREME WIND CHILL&quot;, &quot;EXTREME WIND CHILL/BLOWING SNO&quot;, &quot;EXTREME WIND CHILLS&quot;, &quot;EXTREME WINDCHILL&quot;, 
-                  &quot;EXTREME WINDCHILL TEMPERATURES&quot;, &quot;EXTREME/RECORD COLD&quot;, &quot;HYPERTHERMIA/EXPOSURE&quot;, &quot;HYPOTHERMIA&quot;, 
-                  &quot;HYPOTHERMIA/EXPOSURE&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% extreme_cold, &quot;EXTREME COLD/WIND CHILL&quot;))
+extreme_cold &lt;- c(&quot;BITTER WIND CHILL&quot;, &quot;BITTER WIND CHILL TEMPERATURES&quot;, &quot;EXCESSIVE COLD&quot;, &quot;EXTREME 
+                  COLD&quot;, &quot;EXTREME WIND CHILL&quot;, &quot;EXTREME WIND CHILL/BLOWING SNO&quot;, &quot;EXTREME WIND 
+                  CHILLS&quot;, &quot;EXTREME WINDCHILL&quot;, &quot;EXTREME WINDCHILL TEMPERATURES&quot;, &quot;EXTREME/RECORD 
+                  COLD&quot;, &quot;HYPERTHERMIA/EXPOSURE&quot;, &quot;HYPOTHERMIA&quot;, &quot;HYPOTHERMIA/EXPOSURE&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% extreme_cold, &quot;EXTREME COLD/WIND CHILL&quot;))
 
-flash_flood &lt;- c(&quot;DAM BREAK&quot;, &quot;DAM FAILURE&quot;, &quot;FLASH FLOOD - HEAVY RAIN&quot;, &quot;FLASH FLOOD FROM ICE JAMS&quot;, 
-                    &quot;FLASH FLOOD LANDSLIDES&quot;, &quot;FLASH FLOOD WINDS&quot;, &quot;FLASH FLOOD/&quot;, &quot;FLASH FLOOD/ FLOOD&quot;, 
-                    &quot;FLASH FLOOD/ STREET&quot;, &quot;FLASH FLOOD/FLOOD&quot;, &quot;FLASH FLOOD/HEAVY RAIN&quot;, &quot;FLASH FLOOD/LANDSLIDE&quot;, 
-                    &quot;FLASH FLOODING&quot;, &quot;FLASH FLOODING/FLOOD&quot;, &quot;FLASH FLOODING/THUNDERSTORM WI&quot;, &quot;FLASH FLOODS&quot;, 
-                    &quot;FLASH FLOOODING&quot;, &quot;FLOOD FLASH&quot;, &quot;FLOOD FLOOD/FLASH&quot;, &quot;FLOOD/FLASH&quot;, &quot;FLOOD/FLASH FLOOD&quot;, 
-                    &quot;FLOOD/FLASH FLOODING&quot;, &quot;FLOOD/FLASH/FLOOD&quot;, &quot;FLOOD/FLASHFLOOD&quot;, &quot;HIGHWAY FLOODING&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% flash_flood, &quot;FLASH FLOOD&quot;))
+flash_flood &lt;- c(&quot;DAM BREAK&quot;, &quot;DAM FAILURE&quot;, &quot;FLASH FLOOD - HEAVY RAIN&quot;, &quot;FLASH FLOOD FROM ICE 
+                 JAMS&quot;, &quot;FLASH FLOOD LANDSLIDES&quot;, &quot;FLASH FLOOD WINDS&quot;, &quot;FLASH FLOOD/&quot;, &quot;FLASH FLOOD/ 
+                 FLOOD&quot;, &quot;FLASH FLOOD/ STREET&quot;, &quot;FLASH FLOOD/FLOOD&quot;, &quot;FLASH FLOOD/HEAVY RAIN&quot;, 
+                 &quot;FLASH FLOOD/LANDSLIDE&quot;, &quot;FLASH FLOODING&quot;, &quot;FLASH FLOODING/FLOOD&quot;, &quot;FLASH 
+                 FLOODING/THUNDERSTORM WI&quot;, &quot;FLASH FLOODS&quot;, &quot;FLASH FLOOODING&quot;, &quot;FLOOD FLASH&quot;, &quot;FLOOD 
+                 FLOOD/FLASH&quot;, &quot;FLOOD/FLASH&quot;, &quot;FLOOD/FLASH FLOOD&quot;, &quot;FLOOD/FLASH FLOODING&quot;, 
+                 &quot;FLOOD/FLASH/FLOOD&quot;, &quot;FLOOD/FLASHFLOOD&quot;, &quot;HIGHWAY FLOODING&quot;, &quot;ICE JAM&quot;, &quot;ICE JAM 
+                 FLOOD (MINOR&quot;, &quot;ICE JAM FLOODING&quot;, &quot;LOCAL FLASH FLOOD&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% flash_flood, &quot;FLASH FLOOD&quot;))
 
-flood &lt;- c(&quot;FLOOD &amp; HEAVY RAIN&quot;, &quot;FLOOD WATCH/&quot;, &quot;FLOOD/RAIN/WIND&quot;, &quot;FLOOD/RAIN/WINDS&quot;, &quot;FLOOD/RIVER FLOOD&quot;, 
-              &quot;FLOOD/STRONG WIND&quot;, &quot;FLOODING&quot;, &quot;FLOODING/HEAVY RAIN&quot;, &quot;FLOODS&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% flood, &quot;FLOOD&quot;))
+flood &lt;- c(&quot;FLOOD &amp; HEAVY RAIN&quot;, &quot;FLOOD WATCH/&quot;, &quot;FLOOD/RAIN/WIND&quot;, &quot;FLOOD/RAIN/WINDS&quot;, 
+           &quot;FLOOD/RIVER FLOOD&quot;, &quot;FLOOD/STRONG WIND&quot;, &quot;FLOODING&quot;, &quot;FLOODING/HEAVY RAIN&quot;, &quot;FLOODS&quot;, 
+           &quot;LOCAL FLOOD&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% flood, &quot;FLOOD&quot;))
 
-freezing_fog &lt;- c(&quot;BLACK ICE&quot;, &quot;FREEZE&quot;, &quot;GLAZE&quot;, &quot;GLAZE ICE&quot;, &quot;GLAZE/ICE STORM&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% freezing_fog, &quot;FREEZING FOG&quot;))
+freezing_fog &lt;- c(&quot;BLACK ICE&quot;, &quot;FREEZE&quot;, &quot;GLAZE&quot;, &quot;GLAZE ICE&quot;, &quot;GLAZE/ICE STORM&quot;, &quot;ICE ON ROAD&quot;, 
+                  &quot;ICE ROADS&quot;, &quot;ICY ROADS&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% freezing_fog, &quot;FREEZING FOG&quot;))
 
-frost_freeze &lt;- c(&quot;AGRICULTURAL FREEZE&quot;, &quot;DAMAGING FREEZE&quot;, &quot;EARLY FREEZE&quot;, &quot;EARLY FROST&quot;, &quot;FIRST FROST&quot;, &quot;FROST&quot;, 
-                     &quot;FROST\\FREEZE&quot;, &quot;HARD FREEZE&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% frost_freeze, &quot;FROST/FREEZE&quot;))
+frost_freeze &lt;- c(&quot;AGRICULTURAL FREEZE&quot;, &quot;DAMAGING FREEZE&quot;, &quot;EARLY FREEZE&quot;, &quot;EARLY FROST&quot;, &quot;FIRST 
+                  FROST&quot;, &quot;FROST&quot;, &quot;FROST\\FREEZE&quot;, &quot;HARD FREEZE&quot;, &quot;ICE&quot;, &quot;LATE FREEZE&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% frost_freeze, &quot;FROST/FREEZE&quot;))
 
-funnel_cloud &lt;- c(&quot;COLD AIR FUNNEL&quot;, &quot;COLD AIR FUNNELS&quot;, &quot;FUNNEL&quot;, &quot;FUNNEL CLOUD.&quot;, &quot;FUNNEL CLOUD/HAIL&quot;, &quot;FUNNEL CLOUDS&quot;, 
-                     &quot;FUNNELS&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% funnel_cloud, &quot;FUNNEL CLOUD&quot;))
+funnel_cloud &lt;- c(&quot;COLD AIR FUNNEL&quot;, &quot;COLD AIR FUNNELS&quot;, &quot;FUNNEL&quot;, &quot;FUNNEL CLOUD.&quot;, &quot;FUNNEL 
+                  CLOUD/HAIL&quot;, &quot;FUNNEL CLOUDS&quot;, &quot;FUNNELS&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% funnel_cloud, &quot;FUNNEL CLOUD&quot;))
 
-hail &lt;- c(&quot;DEEP HAIL&quot;, &quot;HAIL 0.75&quot;, &quot;HAIL 0.88&quot;, &quot;HAIL 075&quot;, &quot;HAIL 088&quot;, &quot;HAIL 1.00&quot;, &quot;HAIL 1.75&quot;, &quot;HAIL 1.75)&quot;, 
-             &quot;HAIL 100&quot;, &quot;HAIL 125&quot;, &quot;HAIL 150&quot;, &quot;HAIL 175&quot;, &quot;HAIL 200&quot;, &quot;HAIL 225&quot;, &quot;HAIL 275&quot;, &quot;HAIL 450&quot;, &quot;HAIL 75&quot;, 
-             &quot;HAIL 80&quot;, &quot;HAIL 88&quot;, &quot;HAIL ALOFT&quot;, &quot;HAIL DAMAGE&quot;, &quot;HAIL FLOODING&quot;, &quot;HAIL STORM&quot;, &quot;HAILSTORMS&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% hail, &quot;HAIL&quot;))
+hail &lt;- c(&quot;DEEP HAIL&quot;, &quot;HAIL 0.75&quot;, &quot;HAIL 0.88&quot;, &quot;HAIL 075&quot;, &quot;HAIL 088&quot;, &quot;HAIL 1.00&quot;, &quot;HAIL 1.75&quot;, 
+          &quot;HAIL 1.75)&quot;, &quot;HAIL 100&quot;, &quot;HAIL 125&quot;, &quot;HAIL 150&quot;, &quot;HAIL 175&quot;, &quot;HAIL 200&quot;, &quot;HAIL 225&quot;, 
+          &quot;HAIL 275&quot;, &quot;HAIL 450&quot;, &quot;HAIL 75&quot;, &quot;HAIL 80&quot;, &quot;HAIL 88&quot;, &quot;HAIL ALOFT&quot;, &quot;HAIL DAMAGE&quot;, 
+          &quot;HAIL FLOODING&quot;, &quot;HAIL STORM&quot;, &quot;HAILSTORMS&quot;, &quot;ICE PELLETS&quot;, &quot;LATE SEASON HAIL&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% hail, &quot;HAIL&quot;))
 
-heat &lt;- c(&quot;ABNORMAL WARMTH&quot;, &quot;HEAT DROUGHT&quot;, &quot;HEAT WAVE&quot;, &quot;HEAT WAVE DROUGHT&quot;, &quot;HEAT WAVES&quot;, &quot;HEAT/DROUGHT&quot;, &quot;HEATBURST&quot;, 
-             &quot;HIGH TEMPERATURE RECORD&quot;, &quot;HOT AND DRY&quot;, &quot;HOT PATTERN&quot;, &quot;HOT SPELL&quot;, &quot;HOT WEATHER&quot;, &quot;HOT/DRY PATTERN&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% heat, &quot;HEAT&quot;))
+heat &lt;- c(&quot;ABNORMAL WARMTH&quot;, &quot;HEAT DROUGHT&quot;, &quot;HEAT WAVE&quot;, &quot;HEAT WAVE DROUGHT&quot;, &quot;HEAT WAVES&quot;, 
+          &quot;HEAT/DROUGHT&quot;, &quot;HEATBURST&quot;, &quot;HIGH TEMPERATURE RECORD&quot;, &quot;HOT AND DRY&quot;, &quot;HOT PATTERN&quot;, 
+          &quot;HOT SPELL&quot;, &quot;HOT WEATHER&quot;, &quot;HOT/DRY PATTERN&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% heat, &quot;HEAT&quot;))
 
-heavy_rain &lt;- c(&quot;ABNORMALLY WET&quot;, &quot;EARLY RAIN&quot;, &quot;EXCESSIVE PRECIPITATION&quot;, &quot;EXCESSIVE RAIN&quot;, &quot;EXCESSIVE RAINFALL&quot;, 
-                   &quot;EXCESSIVE WETNESS&quot;, &quot;EXTREMELY WET&quot;, &quot;HEAVY MIX&quot;, &quot;HEAVY PRECIPATATION&quot;, &quot;HEAVY PRECIPITATION&quot;, 
-                   &quot;HEAVY RAIN&quot;, &quot;HEAVY RAIN AND FLOOD&quot;, &quot;HEAVY RAIN AND WIND&quot;, &quot;HEAVY RAIN EFFECTS&quot;, &quot;HEAVY RAIN/FLOODING&quot;, 
-                   &quot;HEAVY RAIN/HIGH SURF&quot;, &quot;HEAVY RAIN/LIGHTNING&quot;, &quot;HEAVY RAIN/MUDSLIDES/FLOOD&quot;, &quot;HEAVY RAIN/SEVERE WEATHER&quot;, 
-                   &quot;HEAVY RAIN/SMALL STREAM URBAN&quot;, &quot;HEAVY RAIN/SNOW&quot;, &quot;HEAVY RAIN/URBAN FLOOD&quot;, &quot;HEAVY RAIN/WIND&quot;, 
-                   &quot;HEAVY RAIN; URBAN FLOOD WINDS;&quot;, &quot;HEAVY RAINFALL&quot;, &quot;HEAVY RAINS&quot;, &quot;HEAVY RAINS/FLOODING&quot;, 
-                   &quot;HEAVY SHOWER&quot;, &quot;HEAVY SHOWERS&quot;, &quot;HVY RAIN&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% heavy_rain, &quot;HEAVY RAIN&quot;))
+heavy_rain &lt;- c(&quot;ABNORMALLY WET&quot;, &quot;EARLY RAIN&quot;, &quot;EXCESSIVE PRECIPITATION&quot;, &quot;EXCESSIVE RAIN&quot;, 
+                &quot;EXCESSIVE RAINFALL&quot;, &quot;EXCESSIVE WETNESS&quot;, &quot;EXTREMELY WET&quot;, &quot;HEAVY MIX&quot;, 
+                &quot;HEAVY PRECIPATATION&quot;, &quot;HEAVY PRECIPITATION&quot;, &quot;HEAVY RAIN&quot;, &quot;HEAVY RAIN AND FLOOD&quot;, 
+                &quot;HEAVY RAIN AND WIND&quot;, &quot;HEAVY RAIN EFFECTS&quot;, &quot;HEAVY RAIN/FLOODING&quot;, &quot;HEAVY RAIN/HIGH 
+                SURF&quot;, &quot;HEAVY RAIN/LIGHTNING&quot;, &quot;HEAVY RAIN/MUDSLIDES/FLOOD&quot;, &quot;HEAVY RAIN/SEVERE 
+                WEATHER&quot;, &quot;HEAVY RAIN/SMALL STREAM URBAN&quot;, &quot;HEAVY RAIN/SNOW&quot;, &quot;HEAVY RAIN/URBAN 
+                FLOOD&quot;, &quot;HEAVY RAIN/WIND&quot;, &quot;HEAVY RAIN; URBAN FLOOD WINDS;&quot;, &quot;HEAVY RAINFALL&quot;, 
+                &quot;HEAVY RAINS&quot;, &quot;HEAVY RAINS/FLOODING&quot;, &quot;HEAVY SHOWER&quot;, &quot;HEAVY SHOWERS&quot;, &quot;HVY RAIN&quot;, 
+                &quot;LOCALLY HEAVY RAIN&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% heavy_rain, &quot;HEAVY RAIN&quot;))
 
-heavy_snow &lt;- c(&quot;ACCUMULTATED SNOWFALL&quot;, &quot;EARLY SNOW&quot;, &quot;EARLY SNOWFALL&quot;, &quot;EXCESSIVE SNOW&quot;, &quot;FALLING SNOW/ICE&quot;, 
-                   &quot;FIRST SNOW&quot;, &quot;HEAVY LAKE SNOW&quot;, &quot;HEAVY SNOW-SQUALLS&quot;, &quot;HEAVY SNOW &amp; ICE&quot;, &quot;HEAVY SNOW AND&quot;, 
-                   &quot;HEAVY SNOW AND HIGH WINDS&quot;, &quot;HEAVY SNOW AND ICE&quot;, &quot;HEAVY SNOW AND ICE STORM&quot;, &quot;HEAVY SNOW AND STRONG WINDS&quot;, 
-                   &quot;HEAVY SNOW ANDBLOWING SNOW&quot;, &quot;HEAVY SNOW FREEZING RAIN&quot;, &quot;HEAVY SNOW SHOWER&quot;, &quot;HEAVY SNOW SQUALLS&quot;, 
-                   &quot;HEAVY SNOW/BLIZZARD&quot;, &quot;HEAVY SNOW/BLIZZARD/AVALANCHE&quot;, &quot;HEAVY SNOW/BLOWING SNOW&quot;, &quot;HEAVY SNOW/FREEZING RAIN&quot;, 
-                   &quot;HEAVY SNOW/HIGH&quot;, &quot;HEAVY SNOW/HIGH WIND&quot;, &quot;HEAVY SNOW/HIGH WINDS&quot;, &quot;HEAVY SNOW/HIGH WINDS &amp; FLOOD&quot;, 
-                   &quot;HEAVY SNOW/HIGH WINDS/FREEZING&quot;, &quot;HEAVY SNOW/ICE&quot;, &quot;HEAVY SNOW/ICE STORM&quot;, &quot;HEAVY SNOW/SLEET&quot;, 
-                   &quot;HEAVY SNOW/SQUALLS&quot;, &quot;HEAVY SNOW/WIND&quot;, &quot;HEAVY SNOW/WINTER STORM&quot;, &quot;HEAVY SNOWPACK&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% heavy_snow, &quot;HEAVY SNOW&quot;))
+heavy_snow &lt;- c(&quot;ACCUMULTATED SNOWFALL&quot;, &quot;EARLY SNOW&quot;, &quot;EARLY SNOWFALL&quot;, &quot;EXCESSIVE SNOW&quot;, &quot;FALLING 
+                SNOW/ICE&quot;, &quot;FIRST SNOW&quot;, &quot;HEAVY LAKE SNOW&quot;, &quot;HEAVY SNOW-SQUALLS&quot;, &quot;HEAVY SNOW &amp; ICE&quot;, 
+                &quot;HEAVY SNOW AND&quot;, &quot;HEAVY SNOW AND HIGH WINDS&quot;, &quot;HEAVY SNOW AND ICE&quot;, &quot;HEAVY SNOW AND 
+                ICE STORM&quot;, &quot;HEAVY SNOW AND STRONG WINDS&quot;, &quot;HEAVY SNOW ANDBLOWING SNOW&quot;, &quot;HEAVY SNOW 
+                FREEZING RAIN&quot;, &quot;HEAVY SNOW SHOWER&quot;, &quot;HEAVY SNOW SQUALLS&quot;, &quot;HEAVY SNOW/BLIZZARD&quot;, 
+                &quot;HEAVY SNOW/BLIZZARD/AVALANCHE&quot;, &quot;HEAVY SNOW/BLOWING SNOW&quot;, &quot;HEAVY SNOW/FREEZING 
+                RAIN&quot;, &quot;HEAVY SNOW/HIGH&quot;, &quot;HEAVY SNOW/HIGH WIND&quot;, &quot;HEAVY SNOW/HIGH WINDS&quot;, &quot;HEAVY 
+                SNOW/HIGH WINDS &amp; FLOOD&quot;, &quot;HEAVY SNOW/HIGH WINDS/FREEZING&quot;, &quot;HEAVY SNOW/ICE&quot;, 
+                &quot;HEAVY SNOW/ICE STORM&quot;, &quot;HEAVY SNOW/SLEET&quot;, &quot;HEAVY SNOW/SQUALLS&quot;, &quot;HEAVY SNOW/WIND&quot;, 
+                &quot;HEAVY SNOW/WINTER STORM&quot;, &quot;HEAVY SNOWPACK&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% heavy_snow, &quot;HEAVY SNOW&quot;))
 
-high_surf &lt;- c(&quot;HAZARDOUS SURF&quot;, &quot;HEAVY SEAS&quot;, &quot;HEAVY SURF&quot;, &quot;HEAVY SURF AND WIND&quot;, &quot;HEAVY SURF COASTAL FLOODING&quot;, 
-                  &quot;HEAVY SURF/HIGH SURF&quot;, &quot;HEAVY SWELLS&quot;, &quot;HEAVY WET SNOW&quot;, &quot;HIGH&quot;, &quot;HIGH SEAS&quot;, &quot;HIGH SURF&quot;, 
-                  &quot;HIGH SURF ADVISORIES&quot;, &quot;HIGH SURF ADVISORY&quot;, &quot;HIGH SWELLS&quot;, &quot;HIGH WAVES&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% high_surf, &quot;HIGH SURF&quot;))
+high_surf &lt;- c(&quot;HAZARDOUS SURF&quot;, &quot;HEAVY SEAS&quot;, &quot;HEAVY SURF&quot;, &quot;HEAVY SURF AND WIND&quot;, &quot;HEAVY SURF 
+               COASTAL FLOODING&quot;, &quot;HEAVY SURF/HIGH SURF&quot;, &quot;HEAVY SWELLS&quot;, &quot;HEAVY WET SNOW&quot;, &quot;HIGH&quot;, 
+               &quot;HIGH SEAS&quot;, &quot;HIGH SURF&quot;, &quot;HIGH SURF ADVISORIES&quot;, &quot;HIGH SURF ADVISORY&quot;, &quot;HIGH 
+               SWELLS&quot;, &quot;HIGH WAVES&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% high_surf, &quot;HIGH SURF&quot;))
 
-high_wind &lt;- c(&quot;HIGH WIND (G40)&quot;, &quot;HIGH WIND 48&quot;, &quot;HIGH WIND 63&quot;, &quot;HIGH WIND 70&quot;, &quot;HIGH WIND AND HEAVY SNOW&quot;, 
-                  &quot;HIGH WIND AND HIGH TIDES&quot;, &quot;HIGH WIND AND SEAS&quot;, &quot;HIGH WIND DAMAGE&quot;, &quot;HIGH WIND/ BLIZZARD&quot;, 
-                  &quot;HIGH WIND/BLIZZARD&quot;, &quot;HIGH WIND/BLIZZARD/FREEZING RA&quot;, &quot;HIGH WIND/HEAVY SNOW&quot;, &quot;HIGH WIND/LOW WIND CHILL&quot;, 
-                  &quot;HIGH WIND/SEAS&quot;, &quot;HIGH WIND/WIND CHILL&quot;, &quot;HIGH WIND/WIND CHILL/BLIZZARD&quot;, &quot;HIGH WINDS&quot;, 
-                  &quot;HIGH WINDS 55&quot;, &quot;HIGH WINDS 57&quot;, &quot;HIGH WINDS 58&quot;, &quot;HIGH WINDS 63&quot;, &quot;HIGH WINDS 66&quot;, &quot;HIGH WINDS 67&quot;, 
-                  &quot;HIGH WINDS 73&quot;, &quot;HIGH WINDS 76&quot;, &quot;HIGH WINDS 80&quot;, &quot;HIGH WINDS 82&quot;, &quot;HIGH WINDS AND WIND CHILL&quot;, 
-                  &quot;HIGH WINDS DUST STORM&quot;, &quot;HIGH WINDS HEAVY RAINS&quot;, &quot;HIGH WINDS/&quot;, &quot;HIGH WINDS/COASTAL FLOOD&quot;, 
-                  &quot;HIGH WINDS/COLD&quot;, &quot;HIGH WINDS/FLOODING&quot;, &quot;HIGH WINDS/HEAVY RAIN&quot;, &quot;HIGH WINDS/SNOW&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% high_wind, &quot;HIGH WIND&quot;))
+high_wind &lt;- c(&quot;HIGH WIND (G40)&quot;, &quot;HIGH WIND 48&quot;, &quot;HIGH WIND 63&quot;, &quot;HIGH WIND 70&quot;, &quot;HIGH WIND AND 
+               HEAVY SNOW&quot;, &quot;HIGH WIND AND HIGH TIDES&quot;, &quot;HIGH WIND AND SEAS&quot;, &quot;HIGH WIND DAMAGE&quot;, 
+               &quot;HIGH WIND/ BLIZZARD&quot;, &quot;HIGH WIND/BLIZZARD&quot;, &quot;HIGH WIND/BLIZZARD/FREEZING RA&quot;, &quot;HIGH 
+               WIND/HEAVY SNOW&quot;, &quot;HIGH WIND/LOW WIND CHILL&quot;, &quot;HIGH WIND/SEAS&quot;, &quot;HIGH WIND/WIND 
+               CHILL&quot;, &quot;HIGH WIND/WIND CHILL/BLIZZARD&quot;, &quot;HIGH WINDS&quot;, &quot;HIGH WINDS 55&quot;, &quot;HIGH WINDS 
+               57&quot;, &quot;HIGH WINDS 58&quot;, &quot;HIGH WINDS 63&quot;, &quot;HIGH WINDS 66&quot;, &quot;HIGH WINDS 67&quot;, &quot;HIGH WINDS 
+               73&quot;, &quot;HIGH WINDS 76&quot;, &quot;HIGH WINDS 80&quot;, &quot;HIGH WINDS 82&quot;, &quot;HIGH WINDS AND WIND CHILL&quot;, 
+               &quot;HIGH WINDS DUST STORM&quot;, &quot;HIGH WINDS HEAVY RAINS&quot;, &quot;HIGH WINDS/&quot;, &quot;HIGH WINDS/COASTAL 
+               FLOOD&quot;, &quot;HIGH WINDS/COLD&quot;, &quot;HIGH WINDS/FLOODING&quot;, &quot;HIGH WINDS/HEAVY RAIN&quot;, 
+               &quot;HIGH WINDS/SNOW&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% high_wind, &quot;HIGH WIND&quot;))
 
-hurricane &lt;- c(&quot;HURRICANE-GENERATED SWELLS&quot;, &quot;HURRICANE EDOUARD&quot;, &quot;HURRICANE EMILY&quot;, &quot;HURRICANE ERIN&quot;, 
-                  &quot;HURRICANE FELIX&quot;, &quot;HURRICANE GORDON&quot;, &quot;HURRICANE OPAL&quot;, &quot;HURRICANE OPAL/HIGH WINDS&quot;, &quot;HURRICANE/TYPHOON&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% hurricane, &quot;HURRICANE&quot;))
+hurricane &lt;- c(&quot;HURRICANE-GENERATED SWELLS&quot;, &quot;HURRICANE EDOUARD&quot;, &quot;HURRICANE EMILY&quot;, &quot;HURRICANE 
+               ERIN&quot;, &quot;HURRICANE FELIX&quot;, &quot;HURRICANE GORDON&quot;, &quot;HURRICANE OPAL&quot;, &quot;HURRICANE OPAL/HIGH 
+               WINDS&quot;, &quot;HURRICANE/TYPHOON&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% hurricane, &quot;HURRICANE&quot;))
 
-sleet &lt;- c(&quot;FREEZING DRIZZLE&quot;, &quot;FREEZING DRIZZLE AND FREEZING&quot;, &quot;FREEZING RAIN&quot;, &quot;FREEZING RAIN AND SLEET&quot;, 
-              &quot;FREEZING RAIN AND SNOW&quot;, &quot;FREEZING RAIN SLEET AND&quot;, &quot;FREEZING RAIN SLEET AND LIGHT&quot;, &quot;FREEZING RAIN/SLEET&quot;, 
-              &quot;FREEZING RAIN/SNOW&quot;, &quot;FREEZING SPRAY&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% sleet, &quot;SLEET&quot;))
+ice_storm &lt;- c(&quot;ICE AND SNOW&quot;, &quot;ICE FLOES&quot;, &quot;ICE STORM AND SNOW&quot;, &quot;ICE STORM/FLASH FLOOD&quot;, 
+               &quot;ICE/SNOW&quot;, &quot;ICE/STRONG WINDS&quot;, &quot;ICESTORM/BLIZZARD&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% ice_storm, &quot;ICE STORM&quot;))
 
-strong_wind &lt;- c(&quot;GUSTY LAKE WIND&quot;, &quot;GUSTY WIND&quot;, &quot;GUSTY WIND/HAIL&quot;, &quot;GUSTY WIND/HVY RAIN&quot;, &quot;GUSTY WIND/RAIN&quot;, 
-                    &quot;GUSTY WINDS&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% strong_wind, &quot;STRONG WIND&quot;))
+lake_effect_snow &lt;- c(&quot;LAKE EFFECT SNOW&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% lake_effect_snow, &quot;LAKE-EFFECT SNOW&quot;))
 
-thunderstorm_wind &lt;- c(&quot;DOWNBURST&quot;, &quot;DOWNBURST WINDS&quot;, &quot;DRY MICROBURST&quot;, &quot;DRY MICROBURST 50&quot;, &quot;DRY MICROBURST 53&quot;, 
-                          &quot;DRY MICROBURST 58&quot;, &quot;DRY MICROBURST 61&quot;, &quot;DRY MICROBURST 84&quot;, &quot;DRY MICROBURST WINDS&quot;, 
-                          &quot;DRY MIRCOBURST WINDS&quot;,  &quot;GUSTNADO&quot;, &quot;GUSTNADO AND&quot;, &quot;GUSTY THUNDERSTORM WIND&quot;, 
-                          &quot;GUSTY THUNDERSTORM WINDS&quot;, &quot;THUDERSTORM WINDS&quot;, &quot;THUNDEERSTORM WINDS&quot;, &quot;THUNDERESTORM WINDS&quot;, 
-                          &quot;THUNDERSNOW&quot;, &quot;THUNDERSNOW SHOWER&quot;, &quot;THUNDERSTORM&quot;, &quot;THUNDERSTORM DAMAGE&quot;, &quot;THUNDERSTORM DAMAGE TO&quot;, 
-                          &quot;THUNDERSTORM HAIL&quot;, &quot;THUNDERSTORM W INDS&quot;, &quot;THUNDERSTORM WIND (G40)&quot;, &quot;THUNDERSTORM WIND 50&quot;, 
-                          &quot;THUNDERSTORM WIND 52&quot;, &quot;THUNDERSTORM WIND 56&quot;, &quot;THUNDERSTORM WIND 59&quot;, &quot;THUNDERSTORM WIND 59 MPH&quot;, 
-                          &quot;THUNDERSTORM WIND 59 MPH.&quot;, &quot;THUNDERSTORM WIND 60 MPH&quot;, &quot;THUNDERSTORM WIND 65 MPH&quot;, 
-                          &quot;THUNDERSTORM WIND 65MPH&quot;, &quot;THUNDERSTORM WIND 69&quot;, &quot;THUNDERSTORM WIND 98 MPH&quot;, &quot;THUNDERSTORM WIND G50&quot;, 
-                          &quot;THUNDERSTORM WIND G51&quot;, &quot;THUNDERSTORM WIND G52&quot;, &quot;THUNDERSTORM WIND G55&quot;, &quot;THUNDERSTORM WIND G60&quot;, 
-                          &quot;THUNDERSTORM WIND G61&quot;, &quot;THUNDERSTORM WIND TREES&quot;, &quot;THUNDERSTORM WIND.&quot;, &quot;THUNDERSTORM WIND/ TREE&quot;, 
-                          &quot;THUNDERSTORM WIND/ TREES&quot;, &quot;THUNDERSTORM WIND/AWNING&quot;, &quot;THUNDERSTORM WIND/HAIL&quot;, 
-                          &quot;THUNDERSTORM WIND/LIGHTNING&quot;, &quot;THUNDERSTORM WINDS&quot;, &quot;THUNDERSTORM WINDS 13&quot;, &quot;THUNDERSTORM WINDS 2&quot;, 
-                          &quot;THUNDERSTORM WINDS 50&quot;, &quot;THUNDERSTORM WINDS 52&quot;, &quot;THUNDERSTORM WINDS 53&quot;, &quot;THUNDERSTORM WINDS 60&quot;, 
-                          &quot;THUNDERSTORM WINDS 61&quot;, &quot;THUNDERSTORM WINDS 62&quot;, &quot;THUNDERSTORM WINDS 63 MPH&quot;, 
-                          &quot;THUNDERSTORM WINDS AND&quot;, &quot;THUNDERSTORM WINDS FUNNEL CLOU&quot;, &quot;THUNDERSTORM WINDS G&quot;, 
-                          &quot;THUNDERSTORM WINDS G60&quot;, &quot;THUNDERSTORM WINDS HAIL&quot;, &quot;THUNDERSTORM WINDS HEAVY RAIN&quot;, 
-                          &quot;THUNDERSTORM WINDS LE CEN&quot;, &quot;THUNDERSTORM WINDS LIGHTNING&quot;, &quot;THUNDERSTORM WINDS SMALL STREA&quot;, 
-                          &quot;THUNDERSTORM WINDS URBAN FLOOD&quot;, &quot;THUNDERSTORM WINDS.&quot;, &quot;THUNDERSTORM WINDS/ FLOOD&quot;, 
-                          &quot;THUNDERSTORM WINDS/ HAIL&quot;, &quot;THUNDERSTORM WINDS/FLASH FLOOD&quot;, &quot;THUNDERSTORM WINDS/FLOODING&quot;, 
-                          &quot;THUNDERSTORM WINDS/FUNNEL CLOU&quot;, &quot;THUNDERSTORM WINDS/HAIL&quot;, &quot;THUNDERSTORM WINDS/HEAVY RAIN&quot;, 
-                          &quot;THUNDERSTORM WINDS53&quot;, &quot;THUNDERSTORM WINDSHAIL&quot;, &quot;THUNDERSTORM WINDSS&quot;, &quot;THUNDERSTORM WINS&quot;, 
-                          &quot;THUNDERSTORMS&quot;, &quot;THUNDERSTORMS WIND&quot;, &quot;THUNDERSTORMS WINDS&quot;, &quot;THUNDERSTORMW&quot;, &quot;THUNDERSTORMW 50&quot;, 
-                          &quot;THUNDERSTORMW WINDS&quot;, &quot;THUNDERSTORMWINDS&quot;, &quot;THUNDERSTROM WIND&quot;, &quot;THUNDERSTROM WINDS&quot;, 
-                          &quot;THUNDERTORM WINDS&quot;, &quot;THUNDERTSORM WIND&quot;, &quot;THUNDESTORM WINDS&quot;, &quot;THUNERSTORM WINDS&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% thunderstorm_wind, &quot;THUNDERSTORM WIND&quot;))
+lakeshore_flood &lt;- c(&quot;LAKE FLOOD&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% lakeshore_flood, &quot;LAKESHORE FLOOD&quot;))
 
-tornado &lt;- c(&quot;COLD AIR TORNADO&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% tornado, &quot;TORNADO&quot;))
+lightning &lt;- c(&quot;LIGHTING&quot;, &quot;LIGHTNING AND HEAVY RAIN&quot;, &quot;LIGHTNING AND THUNDERSTORM WIN&quot;, &quot;LIGHTNING 
+               AND WINDS&quot;, &quot;LIGHTNING DAMAGE&quot;, &quot;LIGHTNING FIRE&quot;, &quot;LIGHTNING INJURY&quot;, &quot;LIGHTNING 
+               THUNDERSTORM WINDS&quot;, &quot;LIGHTNING THUNDERSTORM WINDSS&quot;, &quot;LIGHTNING WAUSEON&quot;, 
+               &quot;LIGHTNING.&quot;, &quot;LIGHTNING/HEAVY RAIN&quot;, &quot;LIGNTNING&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% lightning, &quot;LIGHTNING&quot;))
 
-tropical_storm &lt;- c(&quot;COASTAL STORM&quot;, &quot;COASTAL SURGE&quot;, &quot;COASTALSTORM&quot;, &quot;GRADIENT WIND&quot;, &quot;GRADIENT WINDS&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% tropical_storm, &quot;TROPICAL STORM&quot;))
+sleet &lt;- c(&quot;FREEZING DRIZZLE&quot;, &quot;FREEZING DRIZZLE AND FREEZING&quot;, &quot;FREEZING RAIN&quot;, &quot;FREEZING RAIN AND 
+           SLEET&quot;, &quot;FREEZING RAIN AND SNOW&quot;, &quot;FREEZING RAIN SLEET AND&quot;, &quot;FREEZING RAIN SLEET AND 
+           LIGHT&quot;, &quot;FREEZING RAIN/SLEET&quot;, &quot;FREEZING RAIN/SNOW&quot;, &quot;FREEZING SPRAY&quot;, &quot;LIGHT FREEZING 
+           RAIN&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% sleet, &quot;SLEET&quot;))
+
+strong_wind &lt;- c(&quot;GUSTY LAKE WIND&quot;, &quot;GUSTY WIND&quot;, &quot;GUSTY WIND/HAIL&quot;, &quot;GUSTY WIND/HVY RAIN&quot;, &quot;GUSTY 
+                 WIND/RAIN&quot;, &quot;GUSTY WINDS&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% strong_wind, &quot;STRONG WIND&quot;))
+
+thunderstorm_wind &lt;- c(&quot;DOWNBURST&quot;, &quot;DOWNBURST WINDS&quot;, &quot;DRY MICROBURST&quot;, &quot;DRY MICROBURST 50&quot;, &quot;DRY 
+                       MICROBURST 53&quot;, &quot;DRY MICROBURST 58&quot;, &quot;DRY MICROBURST 61&quot;, &quot;DRY MICROBURST 
+                       84&quot;, &quot;DRY MICROBURST WINDS&quot;, &quot;DRY MIRCOBURST WINDS&quot;,  &quot;GUSTNADO&quot;, &quot;GUSTNADO 
+                       AND&quot;, &quot;GUSTY THUNDERSTORM WIND&quot;, &quot;GUSTY THUNDERSTORM WINDS&quot;, &quot;THUDERSTORM 
+                       WINDS&quot;, &quot;THUNDEERSTORM WINDS&quot;, &quot;THUNDERESTORM WINDS&quot;, &quot;THUNDERSNOW&quot;, 
+                       &quot;THUNDERSNOW SHOWER&quot;, &quot;THUNDERSTORM&quot;, &quot;THUNDERSTORM DAMAGE&quot;, &quot;THUNDERSTORM 
+                       DAMAGE TO&quot;, &quot;THUNDERSTORM HAIL&quot;, &quot;THUNDERSTORM W INDS&quot;, &quot;THUNDERSTORM WIND 
+                       (G40)&quot;, &quot;THUNDERSTORM WIND 50&quot;, &quot;THUNDERSTORM WIND 52&quot;, &quot;THUNDERSTORM WIND 
+                       56&quot;, &quot;THUNDERSTORM WIND 59&quot;, &quot;THUNDERSTORM WIND 59 MPH&quot;, &quot;THUNDERSTORM WIND 
+                       59 MPH.&quot;, &quot;THUNDERSTORM WIND 60 MPH&quot;, &quot;THUNDERSTORM WIND 65 MPH&quot;, 
+                       &quot;THUNDERSTORM WIND 65MPH&quot;, &quot;THUNDERSTORM WIND 69&quot;, &quot;THUNDERSTORM WIND 98 
+                       MPH&quot;, &quot;THUNDERSTORM WIND G50&quot;, &quot;THUNDERSTORM WIND G51&quot;, &quot;THUNDERSTORM WIND 
+                       G52&quot;, &quot;THUNDERSTORM WIND G55&quot;, &quot;THUNDERSTORM WIND G60&quot;, &quot;THUNDERSTORM WIND 
+                       G61&quot;, &quot;THUNDERSTORM WIND TREES&quot;, &quot;THUNDERSTORM WIND.&quot;, &quot;THUNDERSTORM WIND/ 
+                       TREE&quot;,  &quot;THUNDERSTORM WIND/ TREES&quot;, &quot;THUNDERSTORM WIND/AWNING&quot;, &quot;THUNDERSTORM 
+                       WIND/HAIL&quot;,  &quot;THUNDERSTORM WIND/LIGHTNING&quot;, &quot;THUNDERSTORM WINDS&quot;, 
+                       &quot;THUNDERSTORM WINDS 13&quot;, &quot;THUNDERSTORM WINDS 2&quot;,  &quot;THUNDERSTORM WINDS 50&quot;, 
+                       &quot;THUNDERSTORM WINDS 52&quot;, &quot;THUNDERSTORM WINDS 53&quot;, &quot;THUNDERSTORM WINDS 60&quot;, 
+                       &quot;THUNDERSTORM WINDS 61&quot;, &quot;THUNDERSTORM WINDS 62&quot;, &quot;THUNDERSTORM WINDS 63 
+                       MPH&quot;, &quot;THUNDERSTORM WINDS AND&quot;, &quot;THUNDERSTORM WINDS FUNNEL CLOU&quot;, 
+                       &quot;THUNDERSTORM WINDS G&quot;, &quot;THUNDERSTORM WINDS G60&quot;, &quot;THUNDERSTORM WINDS HAIL&quot;, 
+                       &quot;THUNDERSTORM WINDS HEAVY RAIN&quot;, &quot;THUNDERSTORM WINDS LE CEN&quot;, &quot;THUNDERSTORM 
+                       WINDS LIGHTNING&quot;, &quot;THUNDERSTORM WINDS SMALL STREA&quot;, &quot;THUNDERSTORM WINDS URBAN 
+                       FLOOD&quot;, &quot;THUNDERSTORM WINDS.&quot;, &quot;THUNDERSTORM WINDS/ FLOOD&quot;, &quot;THUNDERSTORM 
+                       WINDS/ HAIL&quot;, &quot;THUNDERSTORM WINDS/FLASH FLOOD&quot;, &quot;THUNDERSTORM 
+                       WINDS/FLOODING&quot;, &quot;THUNDERSTORM WINDS/FUNNEL CLOU&quot;, &quot;THUNDERSTORM WINDS/HAIL&quot;, 
+                       &quot;THUNDERSTORM WINDS/HEAVY RAIN&quot;, &quot;THUNDERSTORM WINDS53&quot;, &quot;THUNDERSTORM 
+                       WINDSHAIL&quot;, &quot;THUNDERSTORM WINDSS&quot;, &quot;THUNDERSTORM WINS&quot;, &quot;THUNDERSTORMS&quot;, 
+                       &quot;THUNDERSTORMS WIND&quot;, &quot;THUNDERSTORMS WINDS&quot;, &quot;THUNDERSTORMW&quot;, &quot;THUNDERSTORMW 
+                       50&quot;, &quot;THUNDERSTORMW WINDS&quot;, &quot;THUNDERSTORMWINDS&quot;, &quot;THUNDERSTROM WIND&quot;, 
+                       &quot;THUNDERSTROM WINDS&quot;, &quot;THUNDERTORM WINDS&quot;, &quot;THUNDERTSORM WIND&quot;, &quot;THUNDESTORM 
+                       WINDS&quot;, &quot;THUNERSTORM WINDS&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% thunderstorm_wind, &quot;THUNDERSTORM WIND&quot;))
+
+tornado &lt;- c(&quot;COLD AIR TORNADO&quot;, &quot;LANDSPOUT&quot;, &quot;LARGE WALL CLOUD&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% tornado, &quot;TORNADO&quot;))
+
+tropical_storm &lt;- c(&quot;COASTAL STORM&quot;, &quot;COASTAL SURGE&quot;, &quot;COASTALSTORM&quot;, &quot;GRADIENT WIND&quot;, &quot;GRADIENT 
+                    WINDS&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% tropical_storm, &quot;TROPICAL STORM&quot;))
 
 wildfire &lt;- c(&quot;BRUSH FIRE&quot;, &quot;BRUSH FIRES&quot;, &quot;FOREST FIRES&quot;, &quot;GRASS FIRES&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% wildfire, &quot;WILDFIRE&quot;))
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% wildfire, &quot;WILDFIRE&quot;))
 
-winter_weather &lt;- c(&quot;DRIFTING SNOW&quot;)
-storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, function(x) replace(x, x %in% winter_weather, &quot;WINTER WEATHER&quot;))
+winter_weather &lt;- c(&quot;DRIFTING SNOW&quot;, &quot;LATE-SEASON SNOWFALL&quot;, &quot;LATE SEASON SNOW&quot;, &quot;LATE SEASON 
+                    SNOWFALL&quot;, &quot;LATE SNOW&quot;, &quot;LIGHT SNOW&quot;, &quot;LIGHT SNOW AND SLEET&quot;, &quot;LIGHT 
+                    SNOW/FLURRIES&quot;, &quot;LIGHT SNOW/FREEZING PRECIP&quot;, &quot;LIGHT SNOWFALL&quot;)
+storm_data$EVTYPE &lt;- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% winter_weather, &quot;WINTER WEATHER&quot;))
 
 
 ## The following code drops rows from the dataframe where the event type value is truly anomalous
 
-anomalous_values &lt;- c(&quot;?&quot;, &quot;APACHE COUNTY&quot;, &quot;DROWNING&quot;, &quot;SUMMARY AUGUST 10&quot;, &quot;SUMMARY AUGUST 11&quot;, &quot;SUMMARY AUGUST 17&quot;, 
-                      &quot;SUMMARY AUGUST 2-3&quot;, &quot;SUMMARY AUGUST 21&quot;, &quot;SUMMARY AUGUST 28&quot;, &quot;SUMMARY AUGUST 4&quot;, 
-                      &quot;SUMMARY AUGUST 7&quot;, &quot;SUMMARY AUGUST 9&quot;, &quot;SUMMARY JAN 17&quot;, &quot;SUMMARY JULY 23-24&quot;, &quot;SUMMARY JUNE 18-19&quot;, 
-                      &quot;SUMMARY JUNE 5-6&quot;, &quot;SUMMARY JUNE 6&quot;, &quot;SUMMARY OF APRIL 12&quot;, &quot;SUMMARY OF APRIL 13&quot;, 
-                      &quot;SUMMARY OF APRIL 21&quot;, &quot;SUMMARY OF APRIL 27&quot;,&quot;SUMMARY OF APRIL 3RD&quot;, &quot;SUMMARY OF AUGUST 1&quot;, 
-                      &quot;SUMMARY OF JULY 11&quot;, &quot;SUMMARY OF JULY 2&quot;, &quot;SUMMARY OF JULY 22&quot;, &quot;SUMMARY OF JULY 26&quot;, 
-                      &quot;SUMMARY OF JULY 29&quot;, &quot;SUMMARY OF JULY 3&quot;, &quot;SUMMARY OF JUNE 10&quot;, &quot;SUMMARY OF JUNE 11&quot;, 
-                      &quot;SUMMARY OF JUNE 12&quot;, &quot;SUMMARY OF JUNE 13&quot;, &quot;SUMMARY OF JUNE 15&quot;, &quot;SUMMARY OF JUNE 16&quot;, 
-                      &quot;SUMMARY OF JUNE 18&quot;, &quot;SUMMARY OF JUNE 23&quot;, &quot;SUMMARY OF JUNE 24&quot;, &quot;SUMMARY OF JUNE 3&quot;, 
-                      &quot;SUMMARY OF JUNE 30&quot;, &quot;SUMMARY OF JUNE 4&quot;, &quot;SUMMARY OF JUNE 6&quot;, &quot;SUMMARY OF MARCH 14&quot;, 
-                      &quot;SUMMARY OF MARCH 23&quot;, &quot;SUMMARY OF MARCH 24&quot;, &quot;SUMMARY OF MARCH 24-25&quot;, &quot;SUMMARY OF MARCH 27&quot;, 
-                      &quot;SUMMARY OF MARCH 29&quot;, &quot;SUMMARY OF MAY 10&quot;, &quot;SUMMARY OF MAY 13&quot;, &quot;SUMMARY OF MAY 14&quot;, 
-                      &quot;SUMMARY OF MAY 22&quot;, &quot;SUMMARY OF MAY 22 AM&quot;, &quot;SUMMARY OF MAY 22 PM&quot;, &quot;SUMMARY OF MAY 26 AM&quot;, 
-                      &quot;SUMMARY OF MAY 26 PM&quot;, &quot;SUMMARY OF MAY 31 AM&quot;, &quot;SUMMARY OF MAY 31 PM&quot;, &quot;SUMMARY OF MAY 9-10&quot;, 
-                      &quot;SUMMARY SEPT. 25-26&quot;, &quot;SUMMARY SEPTEMBER 20&quot;, &quot;SUMMARY SEPTEMBER 23&quot;, &quot;SUMMARY SEPTEMBER 3&quot;, 
-                      &quot;SUMMARY SEPTEMBER 4&quot;, &quot;SUMMARY: NOV. 16&quot;, &quot;SUMMARY: NOV. 6-7&quot;, &quot;SUMMARY: OCT. 20-21&quot;, 
-                      &quot;SUMMARY: OCTOBER 31&quot;, &quot;SUMMARY: SEPT. 18&quot;)
+anomalous_values &lt;- c(&quot;?&quot;, &quot;APACHE COUNTY&quot;, &quot;DROWNING&quot;, &quot;LACK OF SNOW&quot;, &quot;SUMMARY AUGUST 10&quot;, 
+                      &quot;SUMMARY AUGUST 11&quot;, &quot;SUMMARY AUGUST 17&quot;, &quot;SUMMARY AUGUST 2-3&quot;, &quot;SUMMARY 
+                      AUGUST 21&quot;, &quot;SUMMARY AUGUST 28&quot;, &quot;SUMMARY AUGUST 4&quot;, &quot;SUMMARY AUGUST 7&quot;, 
+                      &quot;SUMMARY AUGUST 9&quot;, &quot;SUMMARY JAN 17&quot;, &quot;SUMMARY JULY 23-24&quot;, &quot;SUMMARY JUNE 
+                      18-19&quot;, &quot;SUMMARY JUNE 5-6&quot;, &quot;SUMMARY JUNE 6&quot;, &quot;SUMMARY OF APRIL 12&quot;, &quot;SUMMARY 
+                      OF APRIL 13&quot;, &quot;SUMMARY OF APRIL 21&quot;, &quot;SUMMARY OF APRIL 27&quot;, &quot;SUMMARY OF APRIL 
+                      3RD&quot;, &quot;SUMMARY OF AUGUST 1&quot;, &quot;SUMMARY OF JULY 11&quot;, &quot;SUMMARY OF JULY 2&quot;, 
+                      &quot;SUMMARY OF JULY 22&quot;, &quot;SUMMARY OF JULY 26&quot;, &quot;SUMMARY OF JULY 29&quot;, &quot;SUMMARY OF 
+                      JULY 3&quot;, &quot;SUMMARY OF JUNE 10&quot;, &quot;SUMMARY OF JUNE 11&quot;, &quot;SUMMARY OF JUNE 12&quot;, 
+                      &quot;SUMMARY OF JUNE 13&quot;, &quot;SUMMARY OF JUNE 15&quot;, &quot;SUMMARY OF JUNE 16&quot;, &quot;SUMMARY OF 
+                      JUNE 18&quot;, &quot;SUMMARY OF JUNE 23&quot;, &quot;SUMMARY OF JUNE 24&quot;, &quot;SUMMARY OF JUNE 3&quot;, 
+                      &quot;SUMMARY OF JUNE 30&quot;, &quot;SUMMARY OF JUNE 4&quot;, &quot;SUMMARY OF JUNE 6&quot;, &quot;SUMMARY OF 
+                      MARCH 14&quot;, &quot;SUMMARY OF MARCH 23&quot;, &quot;SUMMARY OF MARCH 24&quot;, &quot;SUMMARY OF MARCH 
+                      24-25&quot;, &quot;SUMMARY OF MARCH 27&quot;, &quot;SUMMARY OF MARCH 29&quot;, &quot;SUMMARY OF MAY 10&quot;, 
+                      &quot;SUMMARY OF MAY 13&quot;, &quot;SUMMARY OF MAY 14&quot;, &quot;SUMMARY OF MAY 22&quot;, &quot;SUMMARY OF MAY 
+                      22 AM&quot;, &quot;SUMMARY OF MAY 22 PM&quot;, &quot;SUMMARY OF MAY 26 AM&quot;, &quot;SUMMARY OF MAY 26 PM&quot;, 
+                      &quot;SUMMARY OF MAY 31 AM&quot;, &quot;SUMMARY OF MAY 31 PM&quot;, &quot;SUMMARY OF MAY 9-10&quot;, 
+                      &quot;SUMMARY SEPT. 25-26&quot;, &quot;SUMMARY SEPTEMBER 20&quot;, &quot;SUMMARY SEPTEMBER 23&quot;, 
+                      &quot;SUMMARY SEPTEMBER 3&quot;, &quot;SUMMARY SEPTEMBER 4&quot;, &quot;SUMMARY: NOV. 16&quot;, &quot;SUMMARY: 
+                      NOV. 6-7&quot;, &quot;SUMMARY: OCT. 20-21&quot;, &quot;SUMMARY: OCTOBER 31&quot;, &quot;SUMMARY: SEPT. 18&quot;)
 storm_data &lt;- subset(storm_data, !(EVTYPE %in% anomalous_values))
 
 
 sort(unique(storm_data$EVTYPE))</code></pre>
 <pre><code>##   [1] &quot;ACCUMULATED SNOWFALL&quot;           &quot;ASTRONOMICAL LOW TIDE&quot;         
 ##   [3] &quot;AVALANCE&quot;                       &quot;AVALANCHE&quot;                     
-##   [5] &quot;BLIZZARD&quot;                       &quot;BLOWING DUST&quot;                  
-##   [7] &quot;COASTAL FLOOD&quot;                  &quot;COLD/WIND CHILL&quot;               
-##   [9] &quot;DENSE FOG&quot;                      &quot;DENSE SMOKE&quot;                   
-##  [11] &quot;DROUGHT&quot;                        &quot;DUST DEVIL&quot;                    
-##  [13] &quot;DUST STORM&quot;                     &quot;DUST STORM/HIGH WINDS&quot;         
-##  [15] &quot;DUSTSTORM&quot;                      &quot;EXCESSIVE HEAT&quot;                
-##  [17] &quot;EXTREME COLD/WIND CHILL&quot;        &quot;FLASH FLOOD&quot;                   
-##  [19] &quot;FLOOD&quot;                          &quot;FOG&quot;                           
-##  [21] &quot;FREEZING FOG&quot;                   &quot;FROST/FREEZE&quot;                  
-##  [23] &quot;FUNNEL CLOUD&quot;                   &quot;HAIL&quot;                          
-##  [25] &quot;HAIL(0.75)&quot;                     &quot;HAIL/ICY ROADS&quot;                
-##  [27] &quot;HAIL/WIND&quot;                      &quot;HAIL/WINDS&quot;                    
-##  [29] &quot;HAILSTORM&quot;                      &quot;HEAT&quot;                          
-##  [31] &quot;HEAVY RAIN&quot;                     &quot;HEAVY SNOW&quot;                    
-##  [33] &quot;HIGH SURF&quot;                      &quot;HIGH WIND&quot;                     
-##  [35] &quot;HURRICANE&quot;                      &quot;ICE&quot;                           
-##  [37] &quot;ICE AND SNOW&quot;                   &quot;ICE FLOES&quot;                     
-##  [39] &quot;ICE FOG&quot;                        &quot;ICE JAM&quot;                       
-##  [41] &quot;ICE JAM FLOOD (MINOR&quot;           &quot;ICE JAM FLOODING&quot;              
-##  [43] &quot;ICE ON ROAD&quot;                    &quot;ICE PELLETS&quot;                   
-##  [45] &quot;ICE ROADS&quot;                      &quot;ICE STORM&quot;                     
-##  [47] &quot;ICE STORM AND SNOW&quot;             &quot;ICE STORM/FLASH FLOOD&quot;         
-##  [49] &quot;ICE/SNOW&quot;                       &quot;ICE/STRONG WINDS&quot;              
-##  [51] &quot;ICESTORM/BLIZZARD&quot;              &quot;ICY ROADS&quot;                     
-##  [53] &quot;LACK OF SNOW&quot;                   &quot;LAKE-EFFECT SNOW&quot;              
-##  [55] &quot;LAKE EFFECT SNOW&quot;               &quot;LAKE FLOOD&quot;                    
-##  [57] &quot;LAKESHORE FLOOD&quot;                &quot;LANDSLIDE&quot;                     
-##  [59] &quot;LANDSLIDE/URBAN FLOOD&quot;          &quot;LANDSLIDES&quot;                    
-##  [61] &quot;LANDSLUMP&quot;                      &quot;LANDSPOUT&quot;                     
-##  [63] &quot;LARGE WALL CLOUD&quot;               &quot;LATE-SEASON SNOWFALL&quot;          
-##  [65] &quot;LATE FREEZE&quot;                    &quot;LATE SEASON HAIL&quot;              
-##  [67] &quot;LATE SEASON SNOW&quot;               &quot;LATE SEASON SNOWFALL&quot;          
-##  [69] &quot;LATE SNOW&quot;                      &quot;LIGHT FREEZING RAIN&quot;           
-##  [71] &quot;LIGHT SNOW&quot;                     &quot;LIGHT SNOW AND SLEET&quot;          
-##  [73] &quot;LIGHT SNOW/FLURRIES&quot;            &quot;LIGHT SNOW/FREEZING PRECIP&quot;    
-##  [75] &quot;LIGHT SNOWFALL&quot;                 &quot;LIGHTING&quot;                      
-##  [77] &quot;LIGHTNING&quot;                      &quot;LIGHTNING AND HEAVY RAIN&quot;      
-##  [79] &quot;LIGHTNING AND THUNDERSTORM WIN&quot; &quot;LIGHTNING AND WINDS&quot;           
-##  [81] &quot;LIGHTNING DAMAGE&quot;               &quot;LIGHTNING FIRE&quot;                
-##  [83] &quot;LIGHTNING INJURY&quot;               &quot;LIGHTNING THUNDERSTORM WINDS&quot;  
-##  [85] &quot;LIGHTNING THUNDERSTORM WINDSS&quot;  &quot;LIGHTNING WAUSEON&quot;             
-##  [87] &quot;LIGHTNING.&quot;                     &quot;LIGHTNING/HEAVY RAIN&quot;          
-##  [89] &quot;LIGNTNING&quot;                      &quot;LOCAL FLASH FLOOD&quot;             
-##  [91] &quot;LOCAL FLOOD&quot;                    &quot;LOCALLY HEAVY RAIN&quot;            
-##  [93] &quot;LOW TEMPERATURE&quot;                &quot;LOW TEMPERATURE RECORD&quot;        
-##  [95] &quot;LOW WIND CHILL&quot;                 &quot;MAJOR FLOOD&quot;                   
-##  [97] &quot;MARINE ACCIDENT&quot;                &quot;MARINE HAIL&quot;                   
-##  [99] &quot;MARINE HIGH WIND&quot;               &quot;MARINE MISHAP&quot;                 
-## [101] &quot;MARINE STRONG WIND&quot;             &quot;MARINE THUNDERSTORM WIND&quot;      
-## [103] &quot;MARINE TSTM WIND&quot;               &quot;METRO STORM, MAY 26&quot;           
-## [105] &quot;MICROBURST&quot;                     &quot;MICROBURST WINDS&quot;              
-## [107] &quot;MILD AND DRY PATTERN&quot;           &quot;MILD PATTERN&quot;                  
-## [109] &quot;MILD/DRY PATTERN&quot;               &quot;MINOR FLOOD&quot;                   
-## [111] &quot;MINOR FLOODING&quot;                 &quot;MIXED PRECIP&quot;                  
-## [113] &quot;MIXED PRECIPITATION&quot;            &quot;MODERATE SNOW&quot;                 
-## [115] &quot;MODERATE SNOWFALL&quot;              &quot;MONTHLY PRECIPITATION&quot;         
-## [117] &quot;MONTHLY RAINFALL&quot;               &quot;MONTHLY SNOWFALL&quot;              
-## [119] &quot;MONTHLY TEMPERATURE&quot;            &quot;MOUNTAIN SNOWS&quot;                
-## [121] &quot;MUD SLIDE&quot;                      &quot;MUD SLIDES&quot;                    
-## [123] &quot;MUD SLIDES URBAN FLOODING&quot;      &quot;MUD/ROCK SLIDE&quot;                
-## [125] &quot;MUDSLIDE&quot;                       &quot;MUDSLIDE/LANDSLIDE&quot;            
-## [127] &quot;MUDSLIDES&quot;                      &quot;NEAR RECORD SNOW&quot;              
-## [129] &quot;NO SEVERE WEATHER&quot;              &quot;NON-SEVERE WIND DAMAGE&quot;        
-## [131] &quot;NON-TSTM WIND&quot;                  &quot;NON SEVERE HAIL&quot;               
-## [133] &quot;NON TSTM WIND&quot;                  &quot;NONE&quot;                          
-## [135] &quot;NORMAL PRECIPITATION&quot;           &quot;NORTHERN LIGHTS&quot;               
-## [137] &quot;OTHER&quot;                          &quot;PATCHY DENSE FOG&quot;              
-## [139] &quot;PATCHY ICE&quot;                     &quot;PROLONG COLD&quot;                  
-## [141] &quot;PROLONG COLD/SNOW&quot;              &quot;PROLONG WARMTH&quot;                
-## [143] &quot;PROLONGED RAIN&quot;                 &quot;RAIN&quot;                          
-## [145] &quot;RAIN (HEAVY)&quot;                   &quot;RAIN AND WIND&quot;                 
-## [147] &quot;RAIN DAMAGE&quot;                    &quot;RAIN/SNOW&quot;                     
-## [149] &quot;RAIN/WIND&quot;                      &quot;RAINSTORM&quot;                     
-## [151] &quot;RAPIDLY RISING WATER&quot;           &quot;RECORD COLD&quot;                   
-## [153] &quot;RECORD COLD AND HIGH WIND&quot;      &quot;RECORD COLD/FROST&quot;             
-## [155] &quot;RECORD COOL&quot;                    &quot;RECORD DRY MONTH&quot;              
-## [157] &quot;RECORD DRYNESS&quot;                 &quot;RECORD HEAT&quot;                   
-## [159] &quot;RECORD HEAT WAVE&quot;               &quot;RECORD HIGH&quot;                   
-## [161] &quot;RECORD HIGH TEMPERATURE&quot;        &quot;RECORD HIGH TEMPERATURES&quot;      
-## [163] &quot;RECORD LOW&quot;                     &quot;RECORD LOW RAINFALL&quot;           
-## [165] &quot;RECORD MAY SNOW&quot;                &quot;RECORD PRECIPITATION&quot;          
-## [167] &quot;RECORD RAINFALL&quot;                &quot;RECORD SNOW&quot;                   
-## [169] &quot;RECORD SNOW/COLD&quot;               &quot;RECORD SNOWFALL&quot;               
-## [171] &quot;RECORD TEMPERATURE&quot;             &quot;RECORD TEMPERATURES&quot;           
-## [173] &quot;RECORD WARM&quot;                    &quot;RECORD WARM TEMPS.&quot;            
-## [175] &quot;RECORD WARMTH&quot;                  &quot;RECORD WINTER SNOW&quot;            
-## [177] &quot;RECORD/EXCESSIVE HEAT&quot;          &quot;RECORD/EXCESSIVE RAINFALL&quot;     
-## [179] &quot;RED FLAG CRITERIA&quot;              &quot;RED FLAG FIRE WX&quot;              
-## [181] &quot;REMNANTS OF FLOYD&quot;              &quot;RIP CURRENT&quot;                   
-## [183] &quot;RIP CURRENTS&quot;                   &quot;RIP CURRENTS HEAVY SURF&quot;       
-## [185] &quot;RIP CURRENTS/HEAVY SURF&quot;        &quot;RIVER AND STREAM FLOOD&quot;        
-## [187] &quot;RIVER FLOOD&quot;                    &quot;RIVER FLOODING&quot;                
-## [189] &quot;ROCK SLIDE&quot;                     &quot;ROGUE WAVE&quot;                    
-## [191] &quot;ROTATING WALL CLOUD&quot;            &quot;ROUGH SEAS&quot;                    
-## [193] &quot;ROUGH SURF&quot;                     &quot;RURAL FLOOD&quot;                   
-## [195] &quot;SAHARAN DUST&quot;                   &quot;SEASONAL SNOWFALL&quot;             
-## [197] &quot;SEICHE&quot;                         &quot;SEVERE COLD&quot;                   
-## [199] &quot;SEVERE THUNDERSTORM&quot;            &quot;SEVERE THUNDERSTORM WINDS&quot;     
-## [201] &quot;SEVERE THUNDERSTORMS&quot;           &quot;SEVERE TURBULENCE&quot;             
-## [203] &quot;SLEET&quot;                          &quot;SLEET &amp; FREEZING RAIN&quot;         
-## [205] &quot;SLEET STORM&quot;                    &quot;SLEET/FREEZING RAIN&quot;           
-## [207] &quot;SLEET/ICE STORM&quot;                &quot;SLEET/RAIN/SNOW&quot;               
-## [209] &quot;SLEET/SNOW&quot;                     &quot;SMALL HAIL&quot;                    
-## [211] &quot;SMALL STREAM&quot;                   &quot;SMALL STREAM AND&quot;              
-## [213] &quot;SMALL STREAM AND URBAN FLOOD&quot;   &quot;SMALL STREAM AND URBAN FLOODIN&quot;
-## [215] &quot;SMALL STREAM FLOOD&quot;             &quot;SMALL STREAM FLOODING&quot;         
-## [217] &quot;SMALL STREAM URBAN FLOOD&quot;       &quot;SMALL STREAM/URBAN FLOOD&quot;      
-## [219] &quot;SML STREAM FLD&quot;                 &quot;SMOKE&quot;                         
-## [221] &quot;SNOW&quot;                           &quot;SNOW- HIGH WIND- WIND CHILL&quot;   
-## [223] &quot;SNOW ACCUMULATION&quot;              &quot;SNOW ADVISORY&quot;                 
-## [225] &quot;SNOW AND COLD&quot;                  &quot;SNOW AND HEAVY SNOW&quot;           
-## [227] &quot;SNOW AND ICE&quot;                   &quot;SNOW AND ICE STORM&quot;            
-## [229] &quot;SNOW AND SLEET&quot;                 &quot;SNOW AND WIND&quot;                 
-## [231] &quot;SNOW DROUGHT&quot;                   &quot;SNOW FREEZING RAIN&quot;            
-## [233] &quot;SNOW SHOWERS&quot;                   &quot;SNOW SLEET&quot;                    
-## [235] &quot;SNOW SQUALL&quot;                    &quot;SNOW SQUALLS&quot;                  
-## [237] &quot;SNOW/ BITTER COLD&quot;              &quot;SNOW/ ICE&quot;                     
-## [239] &quot;SNOW/BLOWING SNOW&quot;              &quot;SNOW/COLD&quot;                     
-## [241] &quot;SNOW/FREEZING RAIN&quot;             &quot;SNOW/HEAVY SNOW&quot;               
-## [243] &quot;SNOW/HIGH WINDS&quot;                &quot;SNOW/ICE&quot;                      
-## [245] &quot;SNOW/ICE STORM&quot;                 &quot;SNOW/RAIN&quot;                     
-## [247] &quot;SNOW/RAIN/SLEET&quot;                &quot;SNOW/SLEET&quot;                    
-## [249] &quot;SNOW/SLEET/FREEZING RAIN&quot;       &quot;SNOW/SLEET/RAIN&quot;               
-## [251] &quot;SNOW\\COLD&quot;                     &quot;SNOWFALL RECORD&quot;               
-## [253] &quot;SNOWMELT FLOODING&quot;              &quot;SNOWSTORM&quot;                     
-## [255] &quot;SOUTHEAST&quot;                      &quot;STORM FORCE WINDS&quot;             
-## [257] &quot;STORM SURGE&quot;                    &quot;STORM SURGE/TIDE&quot;              
-## [259] &quot;STREAM FLOODING&quot;                &quot;STREET FLOOD&quot;                  
-## [261] &quot;STREET FLOODING&quot;                &quot;STRONG WIND&quot;                   
-## [263] &quot;STRONG WIND GUST&quot;               &quot;STRONG WINDS&quot;                  
-## [265] &quot;TEMPERATURE RECORD&quot;             &quot;THUNDERSTORM WIND&quot;             
-## [267] &quot;TIDAL FLOOD&quot;                    &quot;TIDAL FLOODING&quot;                
-## [269] &quot;TORNADO&quot;                        &quot;TORNADO DEBRIS&quot;                
-## [271] &quot;TORNADO F0&quot;                     &quot;TORNADO F1&quot;                    
-## [273] &quot;TORNADO F2&quot;                     &quot;TORNADO F3&quot;                    
-## [275] &quot;TORNADO/WATERSPOUT&quot;             &quot;TORNADOES&quot;                     
-## [277] &quot;TORNADOES, TSTM WIND, HAIL&quot;     &quot;TORNADOS&quot;                      
-## [279] &quot;TORNDAO&quot;                        &quot;TORRENTIAL RAIN&quot;               
-## [281] &quot;TORRENTIAL RAINFALL&quot;            &quot;TROPICAL DEPRESSION&quot;           
-## [283] &quot;TROPICAL STORM&quot;                 &quot;TROPICAL STORM ALBERTO&quot;        
-## [285] &quot;TROPICAL STORM DEAN&quot;            &quot;TROPICAL STORM GORDON&quot;         
-## [287] &quot;TROPICAL STORM JERRY&quot;           &quot;TSTM&quot;                          
-## [289] &quot;TSTM HEAVY RAIN&quot;                &quot;TSTM WIND&quot;                     
-## [291] &quot;TSTM WIND (41)&quot;                 &quot;TSTM WIND (G35)&quot;               
-## [293] &quot;TSTM WIND (G40)&quot;                &quot;TSTM WIND (G45)&quot;               
-## [295] &quot;TSTM WIND 40&quot;                   &quot;TSTM WIND 45&quot;                  
-## [297] &quot;TSTM WIND 50&quot;                   &quot;TSTM WIND 51&quot;                  
-## [299] &quot;TSTM WIND 52&quot;                   &quot;TSTM WIND 55&quot;                  
-## [301] &quot;TSTM WIND 65)&quot;                  &quot;TSTM WIND AND LIGHTNING&quot;       
-## [303] &quot;TSTM WIND DAMAGE&quot;               &quot;TSTM WIND G45&quot;                 
-## [305] &quot;TSTM WIND G58&quot;                  &quot;TSTM WIND/HAIL&quot;                
-## [307] &quot;TSTM WINDS&quot;                     &quot;TSTM WND&quot;                      
-## [309] &quot;TSTMW&quot;                          &quot;TSUNAMI&quot;                       
-## [311] &quot;TUNDERSTORM WIND&quot;               &quot;TYPHOON&quot;                       
-## [313] &quot;UNSEASONABLE COLD&quot;              &quot;UNSEASONABLY COLD&quot;             
-## [315] &quot;UNSEASONABLY COOL&quot;              &quot;UNSEASONABLY COOL &amp; WET&quot;       
-## [317] &quot;UNSEASONABLY DRY&quot;               &quot;UNSEASONABLY HOT&quot;              
-## [319] &quot;UNSEASONABLY WARM&quot;              &quot;UNSEASONABLY WARM &amp; WET&quot;       
-## [321] &quot;UNSEASONABLY WARM AND DRY&quot;      &quot;UNSEASONABLY WARM YEAR&quot;        
-## [323] &quot;UNSEASONABLY WARM/WET&quot;          &quot;UNSEASONABLY WET&quot;              
-## [325] &quot;UNSEASONAL LOW TEMP&quot;            &quot;UNSEASONAL RAIN&quot;               
-## [327] &quot;UNUSUAL WARMTH&quot;                 &quot;UNUSUAL/RECORD WARMTH&quot;         
-## [329] &quot;UNUSUALLY COLD&quot;                 &quot;UNUSUALLY LATE SNOW&quot;           
-## [331] &quot;UNUSUALLY WARM&quot;                 &quot;URBAN AND SMALL&quot;               
-## [333] &quot;URBAN AND SMALL STREAM&quot;         &quot;URBAN AND SMALL STREAM FLOOD&quot;  
-## [335] &quot;URBAN AND SMALL STREAM FLOODIN&quot; &quot;URBAN FLOOD&quot;                   
-## [337] &quot;URBAN FLOOD LANDSLIDE&quot;          &quot;URBAN FLOODING&quot;                
-## [339] &quot;URBAN FLOODS&quot;                   &quot;URBAN SMALL&quot;                   
-## [341] &quot;URBAN SMALL STREAM FLOOD&quot;       &quot;URBAN/SMALL&quot;                   
-## [343] &quot;URBAN/SMALL FLOODING&quot;           &quot;URBAN/SMALL STREAM&quot;            
-## [345] &quot;URBAN/SMALL STREAM FLOOD&quot;       &quot;URBAN/SMALL STREAM FLOODING&quot;   
-## [347] &quot;URBAN/SMALL STRM FLDG&quot;          &quot;URBAN/SML STREAM FLD&quot;          
-## [349] &quot;URBAN/SML STREAM FLDG&quot;          &quot;URBAN/STREET FLOODING&quot;         
-## [351] &quot;VERY DRY&quot;                       &quot;VERY WARM&quot;                     
-## [353] &quot;VOG&quot;                            &quot;VOLCANIC ASH&quot;                  
-## [355] &quot;VOLCANIC ASH PLUME&quot;             &quot;VOLCANIC ASHFALL&quot;              
-## [357] &quot;VOLCANIC ERUPTION&quot;              &quot;WAKE LOW WIND&quot;                 
-## [359] &quot;WALL CLOUD&quot;                     &quot;WALL CLOUD/FUNNEL CLOUD&quot;       
-## [361] &quot;WARM DRY CONDITIONS&quot;            &quot;WARM WEATHER&quot;                  
-## [363] &quot;WATER SPOUT&quot;                    &quot;WATERSPOUT&quot;                    
-## [365] &quot;WATERSPOUT-&quot;                    &quot;WATERSPOUT-TORNADO&quot;            
-## [367] &quot;WATERSPOUT FUNNEL CLOUD&quot;        &quot;WATERSPOUT TORNADO&quot;            
-## [369] &quot;WATERSPOUT/&quot;                    &quot;WATERSPOUT/ TORNADO&quot;           
-## [371] &quot;WATERSPOUT/TORNADO&quot;             &quot;WATERSPOUTS&quot;                   
-## [373] &quot;WAYTERSPOUT&quot;                    &quot;WET MICOBURST&quot;                 
-## [375] &quot;WET MICROBURST&quot;                 &quot;WET MONTH&quot;                     
-## [377] &quot;WET SNOW&quot;                       &quot;WET WEATHER&quot;                   
-## [379] &quot;WET YEAR&quot;                       &quot;WHIRLWIND&quot;                     
-## [381] &quot;WILD FIRES&quot;                     &quot;WILD/FOREST FIRE&quot;              
-## [383] &quot;WILD/FOREST FIRES&quot;              &quot;WILDFIRE&quot;                      
-## [385] &quot;WILDFIRES&quot;                      &quot;WIND&quot;                          
-## [387] &quot;WIND ADVISORY&quot;                  &quot;WIND AND WAVE&quot;                 
-## [389] &quot;WIND CHILL&quot;                     &quot;WIND CHILL/HIGH WIND&quot;          
-## [391] &quot;WIND DAMAGE&quot;                    &quot;WIND GUSTS&quot;                    
-## [393] &quot;WIND STORM&quot;                     &quot;WIND/HAIL&quot;                     
-## [395] &quot;WINDS&quot;                          &quot;WINTER MIX&quot;                    
-## [397] &quot;WINTER STORM&quot;                   &quot;WINTER STORM HIGH WINDS&quot;       
-## [399] &quot;WINTER STORM/HIGH WIND&quot;         &quot;WINTER STORM/HIGH WINDS&quot;       
-## [401] &quot;WINTER STORMS&quot;                  &quot;WINTER WEATHER&quot;                
-## [403] &quot;WINTER WEATHER MIX&quot;             &quot;WINTER WEATHER/MIX&quot;            
-## [405] &quot;WINTERY MIX&quot;                    &quot;WINTRY MIX&quot;                    
-## [407] &quot;WND&quot;</code></pre>
+##   [5] &quot;BEACH EROSION/COASTAL FLOOD&quot;    &quot;BLIZZARD&quot;                      
+##   [7] &quot;BLIZZARD/HIGH WIND&quot;             &quot;BLOWING DUST&quot;                  
+##   [9] &quot;COASTAL FLOOD&quot;                  &quot;COASTAL/TIDAL FLOOD&quot;           
+##  [11] &quot;COLD TEMPERATURE&quot;               &quot;COLD WIND CHILL TEMPERATURES&quot;  
+##  [13] &quot;COLD/WIND CHILL&quot;                &quot;DEBRIS FLOW&quot;                   
+##  [15] &quot;DENSE FOG&quot;                      &quot;DENSE SMOKE&quot;                   
+##  [17] &quot;DROUGHT&quot;                        &quot;DROUGHT/EXCESSIVE HEAT&quot;        
+##  [19] &quot;DRY MICROBURST 53&quot;              &quot;DRY MICROBURST 84&quot;             
+##  [21] &quot;DRY WEATHER&quot;                    &quot;DUST DEVIL&quot;                    
+##  [23] &quot;DUST STORM&quot;                     &quot;DUST STORM/HIGH WINDS&quot;         
+##  [25] &quot;DUSTSTORM&quot;                      &quot;EXCESSIVE HEAT&quot;                
+##  [27] &quot;EXTENDED COLD&quot;                  &quot;EXTREME COLD&quot;                  
+##  [29] &quot;EXTREME COLD/WIND CHILL&quot;        &quot;EXTREME WIND CHILLS&quot;           
+##  [31] &quot;EXTREME/RECORD COLD&quot;            &quot;FALLING SNOW/ICE&quot;              
+##  [33] &quot;FIRST FROST&quot;                    &quot;FLASH FLOOD&quot;                   
+##  [35] &quot;FLASH FLOOD FROM ICE JAMS&quot;      &quot;FLASH FLOOD/ FLOOD&quot;            
+##  [37] &quot;FLASH FLOODING/THUNDERSTORM WI&quot; &quot;FLOOD&quot;                         
+##  [39] &quot;FLOOD FLOOD/FLASH&quot;              &quot;FOG&quot;                           
+##  [41] &quot;FREEZING FOG&quot;                   &quot;FREEZING RAIN AND SLEET&quot;       
+##  [43] &quot;FREEZING RAIN SLEET AND LIGHT&quot;  &quot;FROST/FREEZE&quot;                  
+##  [45] &quot;FUNNEL CLOUD&quot;                   &quot;FUNNEL CLOUD/HAIL&quot;             
+##  [47] &quot;GRADIENT WINDS&quot;                 &quot;GUSTNADO AND&quot;                  
+##  [49] &quot;GUSTY WIND/RAIN&quot;                &quot;HAIL&quot;                          
+##  [51] &quot;HAIL(0.75)&quot;                     &quot;HAIL/ICY ROADS&quot;                
+##  [53] &quot;HAIL/WIND&quot;                      &quot;HAIL/WINDS&quot;                    
+##  [55] &quot;HAILSTORM&quot;                      &quot;HEAT&quot;                          
+##  [57] &quot;HEAVY RAIN&quot;                     &quot;HEAVY RAIN/HIGH SURF&quot;          
+##  [59] &quot;HEAVY RAIN/SEVERE WEATHER&quot;      &quot;HEAVY RAIN/URBAN FLOOD&quot;        
+##  [61] &quot;HEAVY SNOW&quot;                     &quot;HEAVY SNOW AND ICE STORM&quot;      
+##  [63] &quot;HEAVY SNOW FREEZING RAIN&quot;       &quot;HEAVY SNOW/FREEZING RAIN&quot;      
+##  [65] &quot;HEAVY SNOW/HIGH WINDS &amp; FLOOD&quot;  &quot;HEAVY SURF COASTAL FLOODING&quot;   
+##  [67] &quot;HIGH SURF&quot;                      &quot;HIGH SWELLS&quot;                   
+##  [69] &quot;HIGH TIDES&quot;                     &quot;HIGH WIND&quot;                     
+##  [71] &quot;HIGH WIND AND HEAVY SNOW&quot;       &quot;HIGH WIND/HEAVY SNOW&quot;          
+##  [73] &quot;HIGH WIND/WIND CHILL&quot;           &quot;HIGH WINDS 57&quot;                 
+##  [75] &quot;HIGH WINDS 73&quot;                  &quot;HIGH WINDS/COASTAL FLOOD&quot;      
+##  [77] &quot;HURRICANE&quot;                      &quot;HURRICANE ERIN&quot;                
+##  [79] &quot;HURRICANE OPAL/HIGH WINDS&quot;      &quot;ICE FOG&quot;                       
+##  [81] &quot;ICE JAM FLOOD (MINOR&quot;           &quot;ICE STORM&quot;                     
+##  [83] &quot;LAKE-EFFECT SNOW&quot;               &quot;LAKESHORE FLOOD&quot;               
+##  [85] &quot;LATE SEASON SNOWFALL&quot;           &quot;LIGHT FREEZING RAIN&quot;           
+##  [87] &quot;LIGHT SNOW/FLURRIES&quot;            &quot;LIGHTNING&quot;                     
+##  [89] &quot;LIGHTNING AND WINDS&quot;            &quot;LIGHTNING THUNDERSTORM WINDS&quot;  
+##  [91] &quot;MAJOR FLOOD&quot;                    &quot;MARINE ACCIDENT&quot;               
+##  [93] &quot;MARINE HAIL&quot;                    &quot;MARINE HIGH WIND&quot;              
+##  [95] &quot;MARINE MISHAP&quot;                  &quot;MARINE STRONG WIND&quot;            
+##  [97] &quot;MARINE THUNDERSTORM WIND&quot;       &quot;MARINE TSTM WIND&quot;              
+##  [99] &quot;METRO STORM, MAY 26&quot;            &quot;MICROBURST&quot;                    
+## [101] &quot;MICROBURST WINDS&quot;               &quot;MILD AND DRY PATTERN&quot;          
+## [103] &quot;MILD PATTERN&quot;                   &quot;MILD/DRY PATTERN&quot;              
+## [105] &quot;MINOR FLOOD&quot;                    &quot;MINOR FLOODING&quot;                
+## [107] &quot;MIXED PRECIP&quot;                   &quot;MIXED PRECIPITATION&quot;           
+## [109] &quot;MODERATE SNOW&quot;                  &quot;MODERATE SNOWFALL&quot;             
+## [111] &quot;MONTHLY PRECIPITATION&quot;          &quot;MONTHLY RAINFALL&quot;              
+## [113] &quot;MONTHLY SNOWFALL&quot;               &quot;MONTHLY TEMPERATURE&quot;           
+## [115] &quot;MOUNTAIN SNOWS&quot;                 &quot;MUD SLIDE&quot;                     
+## [117] &quot;MUD SLIDES&quot;                     &quot;MUD SLIDES URBAN FLOODING&quot;     
+## [119] &quot;MUD/ROCK SLIDE&quot;                 &quot;MUDSLIDE&quot;                      
+## [121] &quot;MUDSLIDE/LANDSLIDE&quot;             &quot;MUDSLIDES&quot;                     
+## [123] &quot;NEAR RECORD SNOW&quot;               &quot;NO SEVERE WEATHER&quot;             
+## [125] &quot;NON-SEVERE WIND DAMAGE&quot;         &quot;NON-TSTM WIND&quot;                 
+## [127] &quot;NON SEVERE HAIL&quot;                &quot;NON TSTM WIND&quot;                 
+## [129] &quot;NONE&quot;                           &quot;NORMAL PRECIPITATION&quot;          
+## [131] &quot;NORTHERN LIGHTS&quot;                &quot;OTHER&quot;                         
+## [133] &quot;PATCHY DENSE FOG&quot;               &quot;PATCHY ICE&quot;                    
+## [135] &quot;PROLONG COLD&quot;                   &quot;PROLONG COLD/SNOW&quot;             
+## [137] &quot;PROLONG WARMTH&quot;                 &quot;PROLONGED RAIN&quot;                
+## [139] &quot;RAIN&quot;                           &quot;RAIN (HEAVY)&quot;                  
+## [141] &quot;RAIN AND WIND&quot;                  &quot;RAIN DAMAGE&quot;                   
+## [143] &quot;RAIN/SNOW&quot;                      &quot;RAIN/WIND&quot;                     
+## [145] &quot;RAINSTORM&quot;                      &quot;RAPIDLY RISING WATER&quot;          
+## [147] &quot;RECORD COLD&quot;                    &quot;RECORD COLD AND HIGH WIND&quot;     
+## [149] &quot;RECORD COLD/FROST&quot;              &quot;RECORD COOL&quot;                   
+## [151] &quot;RECORD DRY MONTH&quot;               &quot;RECORD DRYNESS&quot;                
+## [153] &quot;RECORD HEAT&quot;                    &quot;RECORD HEAT WAVE&quot;              
+## [155] &quot;RECORD HIGH&quot;                    &quot;RECORD HIGH TEMPERATURE&quot;       
+## [157] &quot;RECORD HIGH TEMPERATURES&quot;       &quot;RECORD LOW&quot;                    
+## [159] &quot;RECORD LOW RAINFALL&quot;            &quot;RECORD MAY SNOW&quot;               
+## [161] &quot;RECORD PRECIPITATION&quot;           &quot;RECORD RAINFALL&quot;               
+## [163] &quot;RECORD SNOW&quot;                    &quot;RECORD SNOW/COLD&quot;              
+## [165] &quot;RECORD SNOWFALL&quot;                &quot;RECORD TEMPERATURE&quot;            
+## [167] &quot;RECORD TEMPERATURES&quot;            &quot;RECORD WARM&quot;                   
+## [169] &quot;RECORD WARM TEMPS.&quot;             &quot;RECORD WARMTH&quot;                 
+## [171] &quot;RECORD WINTER SNOW&quot;             &quot;RECORD/EXCESSIVE HEAT&quot;         
+## [173] &quot;RECORD/EXCESSIVE RAINFALL&quot;      &quot;RED FLAG CRITERIA&quot;             
+## [175] &quot;RED FLAG FIRE WX&quot;               &quot;REMNANTS OF FLOYD&quot;             
+## [177] &quot;RIP CURRENT&quot;                    &quot;RIP CURRENTS&quot;                  
+## [179] &quot;RIP CURRENTS HEAVY SURF&quot;        &quot;RIP CURRENTS/HEAVY SURF&quot;       
+## [181] &quot;RIVER AND STREAM FLOOD&quot;         &quot;RIVER FLOOD&quot;                   
+## [183] &quot;RIVER FLOODING&quot;                 &quot;ROCK SLIDE&quot;                    
+## [185] &quot;ROGUE WAVE&quot;                     &quot;ROTATING WALL CLOUD&quot;           
+## [187] &quot;ROUGH SEAS&quot;                     &quot;ROUGH SURF&quot;                    
+## [189] &quot;RURAL FLOOD&quot;                    &quot;SAHARAN DUST&quot;                  
+## [191] &quot;SEASONAL SNOWFALL&quot;              &quot;SEICHE&quot;                        
+## [193] &quot;SEVERE COLD&quot;                    &quot;SEVERE THUNDERSTORM&quot;           
+## [195] &quot;SEVERE THUNDERSTORM WINDS&quot;      &quot;SEVERE THUNDERSTORMS&quot;          
+## [197] &quot;SEVERE TURBULENCE&quot;              &quot;SLEET&quot;                         
+## [199] &quot;SLEET &amp; FREEZING RAIN&quot;          &quot;SLEET STORM&quot;                   
+## [201] &quot;SLEET/FREEZING RAIN&quot;            &quot;SLEET/ICE STORM&quot;               
+## [203] &quot;SLEET/RAIN/SNOW&quot;                &quot;SLEET/SNOW&quot;                    
+## [205] &quot;SMALL HAIL&quot;                     &quot;SMALL STREAM&quot;                  
+## [207] &quot;SMALL STREAM AND&quot;               &quot;SMALL STREAM AND URBAN FLOOD&quot;  
+## [209] &quot;SMALL STREAM AND URBAN FLOODIN&quot; &quot;SMALL STREAM FLOOD&quot;            
+## [211] &quot;SMALL STREAM FLOODING&quot;          &quot;SMALL STREAM URBAN FLOOD&quot;      
+## [213] &quot;SMALL STREAM/URBAN FLOOD&quot;       &quot;SML STREAM FLD&quot;                
+## [215] &quot;SMOKE&quot;                          &quot;SNOW&quot;                          
+## [217] &quot;SNOW- HIGH WIND- WIND CHILL&quot;    &quot;SNOW ACCUMULATION&quot;             
+## [219] &quot;SNOW ADVISORY&quot;                  &quot;SNOW AND COLD&quot;                 
+## [221] &quot;SNOW AND HEAVY SNOW&quot;            &quot;SNOW AND ICE&quot;                  
+## [223] &quot;SNOW AND ICE STORM&quot;             &quot;SNOW AND SLEET&quot;                
+## [225] &quot;SNOW AND WIND&quot;                  &quot;SNOW DROUGHT&quot;                  
+## [227] &quot;SNOW FREEZING RAIN&quot;             &quot;SNOW SHOWERS&quot;                  
+## [229] &quot;SNOW SLEET&quot;                     &quot;SNOW SQUALL&quot;                   
+## [231] &quot;SNOW SQUALLS&quot;                   &quot;SNOW/ BITTER COLD&quot;             
+## [233] &quot;SNOW/ ICE&quot;                      &quot;SNOW/BLOWING SNOW&quot;             
+## [235] &quot;SNOW/COLD&quot;                      &quot;SNOW/FREEZING RAIN&quot;            
+## [237] &quot;SNOW/HEAVY SNOW&quot;                &quot;SNOW/HIGH WINDS&quot;               
+## [239] &quot;SNOW/ICE&quot;                       &quot;SNOW/ICE STORM&quot;                
+## [241] &quot;SNOW/RAIN&quot;                      &quot;SNOW/RAIN/SLEET&quot;               
+## [243] &quot;SNOW/SLEET&quot;                     &quot;SNOW/SLEET/FREEZING RAIN&quot;      
+## [245] &quot;SNOW/SLEET/RAIN&quot;                &quot;SNOW\\COLD&quot;                    
+## [247] &quot;SNOWFALL RECORD&quot;                &quot;SNOWMELT FLOODING&quot;             
+## [249] &quot;SNOWSTORM&quot;                      &quot;SOUTHEAST&quot;                     
+## [251] &quot;STORM FORCE WINDS&quot;              &quot;STORM SURGE&quot;                   
+## [253] &quot;STORM SURGE/TIDE&quot;               &quot;STREAM FLOODING&quot;               
+## [255] &quot;STREET FLOOD&quot;                   &quot;STREET FLOODING&quot;               
+## [257] &quot;STRONG WIND&quot;                    &quot;STRONG WIND GUST&quot;              
+## [259] &quot;STRONG WINDS&quot;                   &quot;SUMMARY AUGUST 21&quot;             
+## [261] &quot;SUMMARY JUNE 18-19&quot;             &quot;SUMMARY OF APRIL 13&quot;           
+## [263] &quot;SUMMARY OF APRIL 3RD&quot;           &quot;SUMMARY OF JULY 3&quot;             
+## [265] &quot;SUMMARY OF JUNE 18&quot;             &quot;SUMMARY OF MARCH 14&quot;           
+## [267] &quot;SUMMARY OF MARCH 24-25&quot;         &quot;SUMMARY OF MAY 22 AM&quot;          
+## [269] &quot;SUMMARY: NOV. 6-7&quot;              &quot;TEMPERATURE RECORD&quot;            
+## [271] &quot;THUDERSTORM WINDS&quot;              &quot;THUNDERSTORM DAMAGE TO&quot;        
+## [273] &quot;THUNDERSTORM WIND&quot;              &quot;THUNDERSTORM WIND (G40)&quot;       
+## [275] &quot;THUNDERSTORM WIND 56&quot;           &quot;THUNDERSTORM WIND 59 MPH.&quot;     
+## [277] &quot;THUNDERSTORM WIND 98 MPH&quot;       &quot;THUNDERSTORM WIND G52&quot;         
+## [279] &quot;THUNDERSTORM WIND G61&quot;          &quot;THUNDERSTORM WIND/ TREE&quot;       
+## [281] &quot;THUNDERSTORM WIND/HAIL&quot;         &quot;THUNDERSTORM WINDS 63 MPH&quot;     
+## [283] &quot;THUNDERSTORM WINDS LIGHTNING&quot;   &quot;THUNDERSTORM WINDS URBAN FLOOD&quot;
+## [285] &quot;THUNDERSTORM WINDS/ HAIL&quot;       &quot;THUNDERSTORM WINDS/FLOODING&quot;   
+## [287] &quot;THUNDERSTORM WINDSHAIL&quot;         &quot;THUNDERSTORMW 50&quot;              
+## [289] &quot;THUNDESTORM WINDS&quot;              &quot;TIDAL FLOOD&quot;                   
+## [291] &quot;TIDAL FLOODING&quot;                 &quot;TORNADO&quot;                       
+## [293] &quot;TORNADO DEBRIS&quot;                 &quot;TORNADO F0&quot;                    
+## [295] &quot;TORNADO F1&quot;                     &quot;TORNADO F2&quot;                    
+## [297] &quot;TORNADO F3&quot;                     &quot;TORNADO/WATERSPOUT&quot;            
+## [299] &quot;TORNADOES&quot;                      &quot;TORNADOES, TSTM WIND, HAIL&quot;    
+## [301] &quot;TORNADOS&quot;                       &quot;TORNDAO&quot;                       
+## [303] &quot;TORRENTIAL RAIN&quot;                &quot;TORRENTIAL RAINFALL&quot;           
+## [305] &quot;TROPICAL DEPRESSION&quot;            &quot;TROPICAL STORM&quot;                
+## [307] &quot;TROPICAL STORM ALBERTO&quot;         &quot;TROPICAL STORM DEAN&quot;           
+## [309] &quot;TROPICAL STORM GORDON&quot;          &quot;TROPICAL STORM JERRY&quot;          
+## [311] &quot;TSTM&quot;                           &quot;TSTM HEAVY RAIN&quot;               
+## [313] &quot;TSTM WIND&quot;                      &quot;TSTM WIND (41)&quot;                
+## [315] &quot;TSTM WIND (G35)&quot;                &quot;TSTM WIND (G40)&quot;               
+## [317] &quot;TSTM WIND (G45)&quot;                &quot;TSTM WIND 40&quot;                  
+## [319] &quot;TSTM WIND 45&quot;                   &quot;TSTM WIND 50&quot;                  
+## [321] &quot;TSTM WIND 51&quot;                   &quot;TSTM WIND 52&quot;                  
+## [323] &quot;TSTM WIND 55&quot;                   &quot;TSTM WIND 65)&quot;                 
+## [325] &quot;TSTM WIND AND LIGHTNING&quot;        &quot;TSTM WIND DAMAGE&quot;              
+## [327] &quot;TSTM WIND G45&quot;                  &quot;TSTM WIND G58&quot;                 
+## [329] &quot;TSTM WIND/HAIL&quot;                 &quot;TSTM WINDS&quot;                    
+## [331] &quot;TSTM WND&quot;                       &quot;TSTMW&quot;                         
+## [333] &quot;TSUNAMI&quot;                        &quot;TUNDERSTORM WIND&quot;              
+## [335] &quot;TYPHOON&quot;                        &quot;UNSEASONABLE COLD&quot;             
+## [337] &quot;UNSEASONABLY COLD&quot;              &quot;UNSEASONABLY COOL&quot;             
+## [339] &quot;UNSEASONABLY COOL &amp; WET&quot;        &quot;UNSEASONABLY DRY&quot;              
+## [341] &quot;UNSEASONABLY HOT&quot;               &quot;UNSEASONABLY WARM&quot;             
+## [343] &quot;UNSEASONABLY WARM &amp; WET&quot;        &quot;UNSEASONABLY WARM AND DRY&quot;     
+## [345] &quot;UNSEASONABLY WARM YEAR&quot;         &quot;UNSEASONABLY WARM/WET&quot;         
+## [347] &quot;UNSEASONABLY WET&quot;               &quot;UNSEASONAL LOW TEMP&quot;           
+## [349] &quot;UNSEASONAL RAIN&quot;                &quot;UNUSUAL WARMTH&quot;                
+## [351] &quot;UNUSUAL/RECORD WARMTH&quot;          &quot;UNUSUALLY COLD&quot;                
+## [353] &quot;UNUSUALLY LATE SNOW&quot;            &quot;UNUSUALLY WARM&quot;                
+## [355] &quot;URBAN AND SMALL&quot;                &quot;URBAN AND SMALL STREAM&quot;        
+## [357] &quot;URBAN AND SMALL STREAM FLOOD&quot;   &quot;URBAN AND SMALL STREAM FLOODIN&quot;
+## [359] &quot;URBAN FLOOD&quot;                    &quot;URBAN FLOOD LANDSLIDE&quot;         
+## [361] &quot;URBAN FLOODING&quot;                 &quot;URBAN FLOODS&quot;                  
+## [363] &quot;URBAN SMALL&quot;                    &quot;URBAN SMALL STREAM FLOOD&quot;      
+## [365] &quot;URBAN/SMALL&quot;                    &quot;URBAN/SMALL FLOODING&quot;          
+## [367] &quot;URBAN/SMALL STREAM&quot;             &quot;URBAN/SMALL STREAM FLOOD&quot;      
+## [369] &quot;URBAN/SMALL STREAM FLOODING&quot;    &quot;URBAN/SMALL STRM FLDG&quot;         
+## [371] &quot;URBAN/SML STREAM FLD&quot;           &quot;URBAN/SML STREAM FLDG&quot;         
+## [373] &quot;URBAN/STREET FLOODING&quot;          &quot;VERY DRY&quot;                      
+## [375] &quot;VERY WARM&quot;                      &quot;VOG&quot;                           
+## [377] &quot;VOLCANIC ASH&quot;                   &quot;VOLCANIC ASH PLUME&quot;            
+## [379] &quot;VOLCANIC ASHFALL&quot;               &quot;VOLCANIC ERUPTION&quot;             
+## [381] &quot;WAKE LOW WIND&quot;                  &quot;WALL CLOUD&quot;                    
+## [383] &quot;WALL CLOUD/FUNNEL CLOUD&quot;        &quot;WARM DRY CONDITIONS&quot;           
+## [385] &quot;WARM WEATHER&quot;                   &quot;WATER SPOUT&quot;                   
+## [387] &quot;WATERSPOUT&quot;                     &quot;WATERSPOUT-&quot;                   
+## [389] &quot;WATERSPOUT-TORNADO&quot;             &quot;WATERSPOUT FUNNEL CLOUD&quot;       
+## [391] &quot;WATERSPOUT TORNADO&quot;             &quot;WATERSPOUT/&quot;                   
+## [393] &quot;WATERSPOUT/ TORNADO&quot;            &quot;WATERSPOUT/TORNADO&quot;            
+## [395] &quot;WATERSPOUTS&quot;                    &quot;WAYTERSPOUT&quot;                   
+## [397] &quot;WET MICOBURST&quot;                  &quot;WET MICROBURST&quot;                
+## [399] &quot;WET MONTH&quot;                      &quot;WET SNOW&quot;                      
+## [401] &quot;WET WEATHER&quot;                    &quot;WET YEAR&quot;                      
+## [403] &quot;WHIRLWIND&quot;                      &quot;WILD FIRES&quot;                    
+## [405] &quot;WILD/FOREST FIRE&quot;               &quot;WILD/FOREST FIRES&quot;             
+## [407] &quot;WILDFIRE&quot;                       &quot;WILDFIRES&quot;                     
+## [409] &quot;WIND&quot;                           &quot;WIND ADVISORY&quot;                 
+## [411] &quot;WIND AND WAVE&quot;                  &quot;WIND CHILL&quot;                    
+## [413] &quot;WIND CHILL/HIGH WIND&quot;           &quot;WIND DAMAGE&quot;                   
+## [415] &quot;WIND GUSTS&quot;                     &quot;WIND STORM&quot;                    
+## [417] &quot;WIND/HAIL&quot;                      &quot;WINDS&quot;                         
+## [419] &quot;WINTER MIX&quot;                     &quot;WINTER STORM&quot;                  
+## [421] &quot;WINTER STORM HIGH WINDS&quot;        &quot;WINTER STORM/HIGH WIND&quot;        
+## [423] &quot;WINTER STORM/HIGH WINDS&quot;        &quot;WINTER STORMS&quot;                 
+## [425] &quot;WINTER WEATHER&quot;                 &quot;WINTER WEATHER MIX&quot;            
+## [427] &quot;WINTER WEATHER/MIX&quot;             &quot;WINTERY MIX&quot;                   
+## [429] &quot;WINTRY MIX&quot;                     &quot;WND&quot;</code></pre>
 <p>According to the National Weather Service Storm Data Documentation,
 property damage estimates <em>should be rounded to three significant
 digits, followed by an alphabetical character signifying the magnitude
@@ -1016,7 +1111,7 @@ But first, let’s examine the unique values in the PROPDMGEXP column.</p>
 <pre class="r"><code>table(storm_data$PROPDMGEXP)</code></pre>
 <pre><code>## 
 ##             -      ?      +      0      1      2      3      4      5      6 
-## 465858      1      8      5    216     25     13      4      4     28      4 
+## 465867      1      8      5    216     25     13      4      4     28      4 
 ##      7      8      B      h      H      K      m      M 
 ##      5      1     40      1      6 424663      7  11330</code></pre>
 <p>As we can see, as well as the magnitude values of “K”, “M” and “B”
@@ -1037,7 +1132,7 @@ anomalies similar to those in the PROPDMGEXP column.</p>
 <pre class="r"><code>table(storm_data$CROPDMGEXP)</code></pre>
 <pre><code>## 
 ##             ?      0      2      B      k      K      m      M 
-## 618335      7     19      1      9     21 281832      1   1994</code></pre>
+## 618344      7     19      1      9     21 281832      1   1994</code></pre>
 <p>Again, assuming the lowercase “k” and “m” should be upper case they
 are changed here.</p>
 <pre class="r"><code>storm_data$CROPDMGEXP[storm_data$CROPDMGEXP == &quot;k&quot;] &lt;- &quot;K&quot;
@@ -1059,20 +1154,20 @@ event type.</p>
     PROPDMG = sum(PROPDMG),
     CROPDMG = sum(CROPDMG)
   )</code></pre>
-<pre><code>## # A tibble: 407 × 5
-##    EVTYPE                FATALITIES INJURIES   PROPDMG   CROPDMG
-##    &lt;chr&gt;                      &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
-##  1 ACCUMULATED SNOWFALL           0        0         0         0
-##  2 ASTRONOMICAL LOW TIDE          0        0    320000         0
-##  3 AVALANCE                       1        0         0         0
-##  4 AVALANCHE                    224      170   3721800         0
-##  5 BLIZZARD                     103      819 659828950 112060000
-##  6 BLOWING DUST                   0        0     20000         0
-##  7 COASTAL FLOOD                  9        7 454562230     56000
-##  8 COLD/WIND CHILL              159       60   2644000  71600000
-##  9 DENSE FOG                     18      342   9674000         0
-## 10 DENSE SMOKE                    0        0    100000         0
-## # … with 397 more rows</code></pre>
+<pre><code>## # A tibble: 430 × 5
+##    EVTYPE                      FATALITIES INJURIES   PROPDMG   CROPDMG
+##    &lt;chr&gt;                            &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+##  1 ACCUMULATED SNOWFALL                 0        0         0         0
+##  2 ASTRONOMICAL LOW TIDE                0        0    320000         0
+##  3 AVALANCE                             1        0         0         0
+##  4 AVALANCHE                          224      170   3721800         0
+##  5 BEACH EROSION/COASTAL FLOOD          0        0         0         0
+##  6 BLIZZARD                           103      819 659828950 112060000
+##  7 BLIZZARD/HIGH WIND                   0        0         0         0
+##  8 BLOWING DUST                         0        0     20000         0
+##  9 COASTAL FLOOD                        9        7 454562080     56000
+## 10 COASTAL/TIDAL FLOOD                  0        0         0         0
+## # … with 420 more rows</code></pre>
 </div>
 <div id="results" class="section level1">
 <h1>Results</h1>
