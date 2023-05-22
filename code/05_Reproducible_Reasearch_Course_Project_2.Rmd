@@ -184,28 +184,41 @@ coastal_flood <- c("ASTRONOMICAL HIGH TIDE", "BEACH EROSIN", "BEACH EROSION", "B
                    FLOOD", "BEACH FLOOD", "BLOW-OUT TIDE", "BLOW-OUT TIDES", "BREAKUP FLOODING", 
                    "COASTAL EROSION", "COASTAL FLOODING", "COASTAL FLOODING/EROSION", "COASTAL/TIDAL 
                    FLOOD", "COASTALFLOOD", "CSTL FLOODING/EROSION", "EROSION/CSTL FLOOD", "HIGH 
-                   TIDES", "HIGH WATER")
+                   TIDES", "HIGH WATER", "TIDAL FLOOD", "TIDAL FLOODING")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% coastal_flood, "COASTAL FLOOD"))
 
 cold_wind_chill <- c("COLD", "COLD AND FROST", "COLD AND SNOW", "COLD AND WET CONDITIONS", "COLD 
                      TEMPERATURE", "COLD TEMPERATURES", "COLD WAVE", "COLD WEATHER", "COLD WIND 
                      CHILL TEMPERATURES", "COLD/WINDS", "COOL AND WET", "COOL SPELL", "EXTENDED 
-                     COLD", "LOW TEMPERATURE", "LOW TEMPERATURE RECORD", "LOW WIND CHILL")
+                     COLD", "LOW TEMPERATURE", "LOW TEMPERATURE RECORD", "LOW WIND CHILL", "PROLONG 
+                     COLD", "PROLONG COLD/SNOW", "RECORD COLD", "RECORD COLD AND HIGH WIND", "RECORD 
+                     COLD/FROST", "RECORD COOL", "SEVERE COLD", "SNOW- HIGH WIND- WIND CHILL", "SNOW 
+                     AND COLD", "SNOW/ BITTER COLD", "SNOW/COLD", "UNSEASONABLE COLD", "UNSEASONABLY 
+                     COLD", "UNSEASONABLY COOL", "UNSEASONABLY COOL & WET", "UNSEASONAL LOW TEMP", 
+                     "UNUSUALLY COLD")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% cold_wind_chill, "COLD/WIND CHILL"))
 
-debris_flow <- c("LANDSLIDE", "LANDSLIDE/URBAN FLOOD", "LANDSLIDES", "LANDSLUMP")
+debris_flow <- c("LANDSLIDE", "LANDSLIDE/URBAN FLOOD", "LANDSLIDES", "LANDSLUMP", "MUD SLIDE", "MUD 
+                 SLIDES", "MUD SLIDES URBAN FLOODING", "MUD/ROCK SLIDE", "MUDSLIDE", 
+                 "MUDSLIDE/LANDSLIDE", "MUDSLIDES", "ROCK SLIDE")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% debris_flow, "DEBRIS FLOW"))
 
-dense_fog <- c("FOG", "FOG AND COLD TEMPERATURES")
+dense_fog <- c("FOG", "FOG AND COLD TEMPERATURES", "PATCHY DENSE FOG")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
-                            function(x) replace(x, x %in% dense_fog, "FOG"))
+                            function(x) replace(x, x %in% dense_fog, "DENSE FOG"))
+
+dense_smoke <- c("SMOKE")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% dense_smoke, "DENSE SMOKE"))
 
 drought <- c("ABNORMALLY DRY", "BELOW NORMAL PRECIPITATION", "DRIEST MONTH", "DROUGHT/EXCESSIVE 
              HEAT", "DRY", "DRY CONDITIONS", "DRY HOT WEATHER", "DRY PATTERN", "DRY SPELL", "DRY 
-             WEATHER", "DRYNESS", "EXCESSIVELY DRY")
+             WEATHER", "DRYNESS", "EXCESSIVELY DRY", "MILD AND DRY PATTERN", "MILD PATTERN", 
+             "MILD/DRY PATTERN", "RECORD DRY MONTH", "RECORD DRYNESS", "RECORD LOW RAINFALL", 
+             "UNSEASONABLY DRY")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% drought, "DROUGHT"))
 
@@ -213,11 +226,13 @@ dust_devil <- c("DUST DEVEL", "DUST DEVIL WATERSPOUT")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% dust_devil, "DUST DEVIL"))
 
-dust_storm <- c("BLOWING DUST", "DUST STORM/HIGH WINDS", "DUSTSTORM")
+dust_storm <- c("BLOWING DUST", "DUST STORM/HIGH WINDS", "DUSTSTORM", "SAHARAN DUST")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
-                            function(x) replace(x, x %in% drought, "DUST STORM"))
+                            function(x) replace(x, x %in% dust_storm, "DUST STORM"))
 
-excessive_heat <- c("EXCESSIVE", "EXCESSIVE HEAT/DROUGHT", "EXTREME HEAT")
+excessive_heat <- c("EXCESSIVE", "EXCESSIVE HEAT/DROUGHT", "EXTREME HEAT", "RECORD HEAT", "RECORD 
+                    HEAT WAVE", "RECORD HIGH", "RECORD HIGH TEMPERATURE", "RECORD HIGH 
+                    TEMPERATURES", "TEMPERATURE RECORD")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% excessive_heat, "EXCESSIVE HEAT"))
 
@@ -235,23 +250,33 @@ flash_flood <- c("DAM BREAK", "DAM FAILURE", "FLASH FLOOD - HEAVY RAIN", "FLASH 
                  FLOODING/THUNDERSTORM WI", "FLASH FLOODS", "FLASH FLOOODING", "FLOOD FLASH", "FLOOD 
                  FLOOD/FLASH", "FLOOD/FLASH", "FLOOD/FLASH FLOOD", "FLOOD/FLASH FLOODING", 
                  "FLOOD/FLASH/FLOOD", "FLOOD/FLASHFLOOD", "HIGHWAY FLOODING", "ICE JAM", "ICE JAM 
-                 FLOOD (MINOR", "ICE JAM FLOODING", "LOCAL FLASH FLOOD")
+                 FLOOD (MINOR", "ICE JAM FLOODING", "LOCAL FLASH FLOOD", "RAPIDLY RISING WATER")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% flash_flood, "FLASH FLOOD"))
 
 flood <- c("FLOOD & HEAVY RAIN", "FLOOD WATCH/", "FLOOD/RAIN/WIND", "FLOOD/RAIN/WINDS", 
            "FLOOD/RIVER FLOOD", "FLOOD/STRONG WIND", "FLOODING", "FLOODING/HEAVY RAIN", "FLOODS", 
-           "LOCAL FLOOD")
+           "LOCAL FLOOD", "MAJOR FLOOD", "MINOR FLOOD", "MINOR FLOODING", "RIVER AND STREAM FLOOD", 
+           "RIVER FLOOD", "RIVER FLOODING", "RURAL FLOOD", "SMALL STREAM", "SMALL STREAM AND", 
+           "SMALL STREAM AND URBAN FLOOD", "SMALL STREAM AND URBAN FLOODIN", "SMALL STREAM FLOOD", 
+           "SMALL STREAM FLOODING", "SMALL STREAM URBAN FLOOD", "SMALL STREAM/URBAN FLOOD", "SML 
+           STREAM FLD", "SNOWMELT FLOODING", "STREAM FLOODING", "STREET FLOOD", "STREET FLOODING", 
+           "URBAN AND SMALL", "URBAN AND SMALL STREAM", "URBAN AND SMALL STREAM FLOOD", "URBAN AND 
+           SMALL STREAM FLOODIN", "URBAN FLOOD", "URBAN FLOOD LANDSLIDE", "URBAN FLOODING", "URBAN 
+           FLOODS", "URBAN SMALL", "URBAN SMALL STREAM FLOOD", "URBAN/SMALL", "URBAN/SMALL 
+           FLOODING", "URBAN/SMALL STREAM", "URBAN/SMALL STREAM FLOOD", "URBAN/SMALL STREAM 
+           FLOODING", "URBAN/SMALL STRM FLDG", "URBAN/SML STREAM FLD", "URBAN/SML STREAM FLDG", 
+           "URBAN/STREET FLOODING")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% flood, "FLOOD"))
 
-freezing_fog <- c("BLACK ICE", "FREEZE", "GLAZE", "GLAZE ICE", "GLAZE/ICE STORM", "ICE ON ROAD", 
-                  "ICE ROADS", "ICY ROADS")
+freezing_fog <- c("BLACK ICE", "GLAZE", "GLAZE ICE", "GLAZE/ICE STORM", "ICE ON ROAD", 
+                  "ICE ROADS", "ICY ROADS", "PATCHY ICE")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% freezing_fog, "FREEZING FOG"))
 
-frost_freeze <- c("AGRICULTURAL FREEZE", "DAMAGING FREEZE", "EARLY FREEZE", "EARLY FROST", "FIRST 
-                  FROST", "FROST", "FROST\\FREEZE", "HARD FREEZE", "ICE", "LATE FREEZE")
+frost_freeze <- c("AGRICULTURAL FREEZE", "DAMAGING FREEZE", "EARLY FREEZE", "FREEZE", "EARLY FROST", 
+                  "FIRST FROST", "FROST", "FROST\\FREEZE", "HARD FREEZE", "ICE", "LATE FREEZE")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% frost_freeze, "FROST/FREEZE"))
 
@@ -263,13 +288,18 @@ storm_data$EVTYPE <- sapply(storm_data$EVTYPE,
 hail <- c("DEEP HAIL", "HAIL 0.75", "HAIL 0.88", "HAIL 075", "HAIL 088", "HAIL 1.00", "HAIL 1.75", 
           "HAIL 1.75)", "HAIL 100", "HAIL 125", "HAIL 150", "HAIL 175", "HAIL 200", "HAIL 225", 
           "HAIL 275", "HAIL 450", "HAIL 75", "HAIL 80", "HAIL 88", "HAIL ALOFT", "HAIL DAMAGE", 
-          "HAIL FLOODING", "HAIL STORM", "HAILSTORMS", "ICE PELLETS", "LATE SEASON HAIL")
+          "HAIL FLOODING", "HAIL STORM", "HAILSTORMS", "ICE PELLETS", "LATE SEASON HAIL", "NON 
+          SEVERE HAIL", "SMALL HAIL")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% hail, "HAIL"))
 
 heat <- c("ABNORMAL WARMTH", "HEAT DROUGHT", "HEAT WAVE", "HEAT WAVE DROUGHT", "HEAT WAVES", 
           "HEAT/DROUGHT", "HEATBURST", "HIGH TEMPERATURE RECORD", "HOT AND DRY", "HOT PATTERN", 
-          "HOT SPELL", "HOT WEATHER", "HOT/DRY PATTERN")
+          "HOT SPELL", "HOT WEATHER", "HOT/DRY PATTERN", "PROLONG WARMTH", "RECORD TEMPERATURE", 
+          "RECORD TEMPERATURES", "RECORD WARM", "RECORD WARM TEMPS.", "RECORD/EXCESSIVE HEAT", 
+          "UNSEASONABLY HOT", "UNSEASONABLY WARM", "UNSEASONABLY WARM & WET", "UNSEASONABLY WARM AND 
+          DRY", "UNSEASONABLY WARM YEAR", "UNSEASONABLY WARM/WET", "UNUSUAL WARMTH", "UNUSUAL/RECORD 
+          WARMTH", "UNUSUALLY WARM")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% heat, "HEAT"))
 
@@ -281,7 +311,11 @@ heavy_rain <- c("ABNORMALLY WET", "EARLY RAIN", "EXCESSIVE PRECIPITATION", "EXCE
                 WEATHER", "HEAVY RAIN/SMALL STREAM URBAN", "HEAVY RAIN/SNOW", "HEAVY RAIN/URBAN 
                 FLOOD", "HEAVY RAIN/WIND", "HEAVY RAIN; URBAN FLOOD WINDS;", "HEAVY RAINFALL", 
                 "HEAVY RAINS", "HEAVY RAINS/FLOODING", "HEAVY SHOWER", "HEAVY SHOWERS", "HVY RAIN", 
-                "LOCALLY HEAVY RAIN")
+                "LOCALLY HEAVY RAIN", "MIXED PRECIP", "MIXED PRECIPITATION", "MONTHLY 
+                PRECIPITATION", "MONTHLY RAINFALL", "NORMAL PRECIPITATION", "PROLONGED RAIN", 
+                "RAIN", "RAIN (HEAVY)", "RAIN AND WIND", "RAIN DAMAGE", "RAIN/SNOW", "RAIN/WIND", 
+                "RAINSTORM", "RECORD PRECIPITATION", "RECORD RAINFALL", "RECORD/EXCESSIVE RAINFALL", 
+                "TORRENTIAL RAIN", "TORRENTIAL RAINFALL", "UNSEASONAL RAIN")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% heavy_rain, "HEAVY RAIN"))
 
@@ -294,14 +328,21 @@ heavy_snow <- c("ACCUMULTATED SNOWFALL", "EARLY SNOW", "EARLY SNOWFALL", "EXCESS
                 RAIN", "HEAVY SNOW/HIGH", "HEAVY SNOW/HIGH WIND", "HEAVY SNOW/HIGH WINDS", "HEAVY 
                 SNOW/HIGH WINDS & FLOOD", "HEAVY SNOW/HIGH WINDS/FREEZING", "HEAVY SNOW/ICE", 
                 "HEAVY SNOW/ICE STORM", "HEAVY SNOW/SLEET", "HEAVY SNOW/SQUALLS", "HEAVY SNOW/WIND", 
-                "HEAVY SNOW/WINTER STORM", "HEAVY SNOWPACK")
+                "HEAVY SNOW/WINTER STORM", "HEAVY SNOWPACK", "MODERATE SNOW", "MODERATE SNOWFALL", 
+                "MONTHLY SNOWFALL", "MOUNTAIN SNOWS", "NEAR RECORD SNOW", "RECORD SNOW", "RECORD 
+                SNOW/COLD", "RECORD SNOWFALL", "RECORD WINTER SNOW", "SEASONAL SNOWFALL", "SNOW", 
+                "SNOW ACCUMULATION", "SNOW ADVISORY", "SNOW AND HEAVY SNOW", "SNOW AND ICE", "SNOW/ ICE", 
+                "SNOW/BLOWING SNOW", "SNOW/FREEZING RAIN", "SNOW/HEAVY SNOW", 
+                "SNOW/HIGH WINDS", "SNOW/ICE", "SNOW/ICE STORM", "SNOW/RAIN", "SNOW/RAIN/SLEET", 
+                "SNOW/SLEET", "SNOW/SLEET/FREEZING RAIN", "SNOW/SLEET/RAIN", "SNOW\\COLD", "SNOWFALL 
+                RECORD")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% heavy_snow, "HEAVY SNOW"))
 
 high_surf <- c("HAZARDOUS SURF", "HEAVY SEAS", "HEAVY SURF", "HEAVY SURF AND WIND", "HEAVY SURF 
                COASTAL FLOODING", "HEAVY SURF/HIGH SURF", "HEAVY SWELLS", "HEAVY WET SNOW", "HIGH", 
                "HIGH SEAS", "HIGH SURF", "HIGH SURF ADVISORIES", "HIGH SURF ADVISORY", "HIGH 
-               SWELLS", "HIGH WAVES")
+               SWELLS", "HIGH WAVES", "ROGUE WAVE", "ROUGH SEAS", "ROUGH SURF")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% high_surf, "HIGH SURF"))
 
@@ -320,12 +361,12 @@ storm_data$EVTYPE <- sapply(storm_data$EVTYPE,
 
 hurricane <- c("HURRICANE-GENERATED SWELLS", "HURRICANE EDOUARD", "HURRICANE EMILY", "HURRICANE 
                ERIN", "HURRICANE FELIX", "HURRICANE GORDON", "HURRICANE OPAL", "HURRICANE OPAL/HIGH 
-               WINDS", "HURRICANE/TYPHOON")
+               WINDS", "HURRICANE/TYPHOON", "REMNANTS OF FLOYD", "TYPHOON")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% hurricane, "HURRICANE"))
 
 ice_storm <- c("ICE AND SNOW", "ICE FLOES", "ICE STORM AND SNOW", "ICE STORM/FLASH FLOOD", 
-               "ICE/SNOW", "ICE/STRONG WINDS", "ICESTORM/BLIZZARD")
+               "ICE/SNOW", "ICE/STRONG WINDS", "ICESTORM/BLIZZARD", "SNOW AND ICE STORM")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% ice_storm, "ICE STORM"))
 
@@ -344,38 +385,55 @@ lightning <- c("LIGHTING", "LIGHTNING AND HEAVY RAIN", "LIGHTNING AND THUNDERSTO
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% lightning, "LIGHTNING"))
 
+marine_thunderstorm_wind <- c("MARINE TSTM WIND")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% marine_thunderstorm_wind, 
+                                                "MARINE THUNDERSTORM WIND"))
+
 sleet <- c("FREEZING DRIZZLE", "FREEZING DRIZZLE AND FREEZING", "FREEZING RAIN", "FREEZING RAIN AND 
            SLEET", "FREEZING RAIN AND SNOW", "FREEZING RAIN SLEET AND", "FREEZING RAIN SLEET AND 
            LIGHT", "FREEZING RAIN/SLEET", "FREEZING RAIN/SNOW", "FREEZING SPRAY", "LIGHT FREEZING 
-           RAIN")
+           RAIN", "SLEET & FREEZING RAIN", "SLEET STORM", "SLEET/FREEZING RAIN", "SLEET/ICE STORM", 
+           "SLEET/RAIN/SNOW", "SLEET/SNOW", "SNOW AND SLEET", "SNOW FREEZING RAIN", "SNOW SLEET")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% sleet, "SLEET"))
 
+rip_current <- c("RIP CURRENTS", "RIP CURRENTS HEAVY SURF", "RIP CURRENTS/HEAVY SURF")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% rip_current, "RIP CURRENT"))
+
+storm_surge_tide <- c("STORM SURGE")
+storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
+                            function(x) replace(x, x %in% storm_surge_tide, "STORM SURGE/TIDE"))
+
 strong_wind <- c("GUSTY LAKE WIND", "GUSTY WIND", "GUSTY WIND/HAIL", "GUSTY WIND/HVY RAIN", "GUSTY 
-                 WIND/RAIN", "GUSTY WINDS")
+                 WIND/RAIN", "GUSTY WINDS", "NON-SEVERE WIND DAMAGE", "NON-TSTM WIND", "NON TSTM 
+                 WIND", "STRONG WIND GUST", "STRONG WINDS")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% strong_wind, "STRONG WIND"))
 
 thunderstorm_wind <- c("DOWNBURST", "DOWNBURST WINDS", "DRY MICROBURST", "DRY MICROBURST 50", "DRY 
                        MICROBURST 53", "DRY MICROBURST 58", "DRY MICROBURST 61", "DRY MICROBURST 
                        84", "DRY MICROBURST WINDS", "DRY MIRCOBURST WINDS",  "GUSTNADO", "GUSTNADO 
-                       AND", "GUSTY THUNDERSTORM WIND", "GUSTY THUNDERSTORM WINDS", "THUDERSTORM 
-                       WINDS", "THUNDEERSTORM WINDS", "THUNDERESTORM WINDS", "THUNDERSNOW", 
-                       "THUNDERSNOW SHOWER", "THUNDERSTORM", "THUNDERSTORM DAMAGE", "THUNDERSTORM 
-                       DAMAGE TO", "THUNDERSTORM HAIL", "THUNDERSTORM W INDS", "THUNDERSTORM WIND 
-                       (G40)", "THUNDERSTORM WIND 50", "THUNDERSTORM WIND 52", "THUNDERSTORM WIND 
-                       56", "THUNDERSTORM WIND 59", "THUNDERSTORM WIND 59 MPH", "THUNDERSTORM WIND 
-                       59 MPH.", "THUNDERSTORM WIND 60 MPH", "THUNDERSTORM WIND 65 MPH", 
-                       "THUNDERSTORM WIND 65MPH", "THUNDERSTORM WIND 69", "THUNDERSTORM WIND 98 
-                       MPH", "THUNDERSTORM WIND G50", "THUNDERSTORM WIND G51", "THUNDERSTORM WIND 
-                       G52", "THUNDERSTORM WIND G55", "THUNDERSTORM WIND G60", "THUNDERSTORM WIND 
-                       G61", "THUNDERSTORM WIND TREES", "THUNDERSTORM WIND.", "THUNDERSTORM WIND/ 
-                       TREE",  "THUNDERSTORM WIND/ TREES", "THUNDERSTORM WIND/AWNING", "THUNDERSTORM 
-                       WIND/HAIL",  "THUNDERSTORM WIND/LIGHTNING", "THUNDERSTORM WINDS", 
-                       "THUNDERSTORM WINDS 13", "THUNDERSTORM WINDS 2",  "THUNDERSTORM WINDS 50", 
-                       "THUNDERSTORM WINDS 52", "THUNDERSTORM WINDS 53", "THUNDERSTORM WINDS 60", 
-                       "THUNDERSTORM WINDS 61", "THUNDERSTORM WINDS 62", "THUNDERSTORM WINDS 63 
-                       MPH", "THUNDERSTORM WINDS AND", "THUNDERSTORM WINDS FUNNEL CLOU", 
+                       AND", "GUSTY THUNDERSTORM WIND", "GUSTY THUNDERSTORM WINDS", "MICROBURST", 
+                       "MICROBURST WINDS", "SEVERE THUNDERSTORM", "SEVERE THUNDERSTORM WINDS", 
+                       "SEVERE THUNDERSTORMS", "SEVERE TURBULENCE", "STORM FORCE WINDS", 
+                       "THUDERSTORM WINDS", "THUNDEERSTORM WINDS", "THUNDERESTORM WINDS", 
+                       "THUNDERSNOW", "THUNDERSNOW SHOWER", "THUNDERSTORM", "THUNDERSTORM DAMAGE", 
+                       "THUNDERSTORM DAMAGE TO", "THUNDERSTORM HAIL", "THUNDERSTORM W INDS", 
+                       "THUNDERSTORM WIND (G40)", "THUNDERSTORM WIND 50", "THUNDERSTORM WIND 52", 
+                       "THUNDERSTORM WIND 56", "THUNDERSTORM WIND 59", "THUNDERSTORM WIND 59 MPH", 
+                       "THUNDERSTORM WIND 59 MPH.", "THUNDERSTORM WIND 60 MPH", "THUNDERSTORM WIND 
+                       65 MPH", "THUNDERSTORM WIND 65MPH", "THUNDERSTORM WIND 69", "THUNDERSTORM 
+                       WIND 98 MPH", "THUNDERSTORM WIND G50", "THUNDERSTORM WIND G51", "THUNDERSTORM 
+                       WIND G52", "THUNDERSTORM WIND G55", "THUNDERSTORM WIND G60", "THUNDERSTORM 
+                       WIND G61", "THUNDERSTORM WIND TREES", "THUNDERSTORM WIND.", "THUNDERSTORM 
+                       WIND/ TREE",  "THUNDERSTORM WIND/ TREES", "THUNDERSTORM WIND/AWNING", 
+                       "THUNDERSTORM WIND/HAIL",  "THUNDERSTORM WIND/LIGHTNING", "THUNDERSTORM 
+                       WINDS", "THUNDERSTORM WINDS 13", "THUNDERSTORM WINDS 2",  "THUNDERSTORM 
+                       WINDS 50", "THUNDERSTORM WINDS 52", "THUNDERSTORM WINDS 53", "THUNDERSTORM 
+                       WINDS 60", "THUNDERSTORM WINDS 61", "THUNDERSTORM WINDS 62", "THUNDERSTORM 
+                       WINDS 63 MPH", "THUNDERSTORM WINDS AND", "THUNDERSTORM WINDS FUNNEL CLOU", 
                        "THUNDERSTORM WINDS G", "THUNDERSTORM WINDS G60", "THUNDERSTORM WINDS HAIL", 
                        "THUNDERSTORM WINDS HEAVY RAIN", "THUNDERSTORM WINDS LE CEN", "THUNDERSTORM 
                        WINDS LIGHTNING", "THUNDERSTORM WINDS SMALL STREA", "THUNDERSTORM WINDS URBAN 
@@ -387,16 +445,24 @@ thunderstorm_wind <- c("DOWNBURST", "DOWNBURST WINDS", "DRY MICROBURST", "DRY MI
                        "THUNDERSTORMS WIND", "THUNDERSTORMS WINDS", "THUNDERSTORMW", "THUNDERSTORMW 
                        50", "THUNDERSTORMW WINDS", "THUNDERSTORMWINDS", "THUNDERSTROM WIND", 
                        "THUNDERSTROM WINDS", "THUNDERTORM WINDS", "THUNDERTSORM WIND", "THUNDESTORM 
-                       WINDS", "THUNERSTORM WINDS")
+                       WINDS", "THUNERSTORM WINDS", "TSTM", "TSTM HEAVY RAIN", "TSTM WIND", "TSTM 
+                       WIND (41)", "TSTM WIND (G35)", "TSTM WIND (G40)", "TSTM WIND (G45)", "TSTM 
+                       WIND 40", "TSTM WIND 45", "TSTM WIND 50", "TSTM WIND 51", "TSTM WIND 52", 
+                       "TSTM WIND 55", "TSTM WIND 65)", "TSTM WIND AND LIGHTNING", "TSTM WIND 
+                       DAMAGE", "TSTM WIND G45", "TSTM WIND G58", "TSTM WIND/HAIL", "TSTM WINDS", 
+                       "TSTM WND", "TSTMW", "TUNDERSTORM WIND")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% thunderstorm_wind, "THUNDERSTORM WIND"))
 
-tornado <- c("COLD AIR TORNADO", "LANDSPOUT", "LARGE WALL CLOUD")
+tornado <- c("COLD AIR TORNADO", "LANDSPOUT", "LARGE WALL CLOUD", "ROTATING WALL CLOUD", "TORNADO 
+             DEBRIS", "TORNADO F0", "TORNADO F1", "TORNADO F2", "TORNADO F3", "TORNADO/WATERSPOUT", 
+             "TORNADOES", "TORNADOES, TSTM WIND, HAIL", "TORNADOS", "TORNDAO")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% tornado, "TORNADO"))
 
 tropical_storm <- c("COASTAL STORM", "COASTAL SURGE", "COASTALSTORM", "GRADIENT WIND", "GRADIENT 
-                    WINDS")
+                    WINDS", "METRO STORM, MAY 26", "TROPICAL STORM ALBERTO", "TROPICAL STORM DEAN", 
+                    "TROPICAL STORM GORDON", "TROPICAL STORM JERRY")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% tropical_storm, "TROPICAL STORM"))
 
@@ -406,14 +472,18 @@ storm_data$EVTYPE <- sapply(storm_data$EVTYPE,
 
 winter_weather <- c("DRIFTING SNOW", "LATE-SEASON SNOWFALL", "LATE SEASON SNOW", "LATE SEASON 
                     SNOWFALL", "LATE SNOW", "LIGHT SNOW", "LIGHT SNOW AND SLEET", "LIGHT 
-                    SNOW/FLURRIES", "LIGHT SNOW/FREEZING PRECIP", "LIGHT SNOWFALL")
+                    SNOW/FLURRIES", "LIGHT SNOW/FREEZING PRECIP", "LIGHT SNOWFALL", "SNOW AND WIND", 
+                    "SNOW SHOWERS", "SNOW SQUALL", "SNOW SQUALLS", "SNOWSTORM", "UNUSUALLY LATE 
+                    SNOW")
 storm_data$EVTYPE <- sapply(storm_data$EVTYPE, 
                             function(x) replace(x, x %in% winter_weather, "WINTER WEATHER"))
 
 
 ## The following code drops rows from the dataframe where the event type value is truly anomalous
 
-anomalous_values <- c("?", "APACHE COUNTY", "DROWNING", "LACK OF SNOW", "SUMMARY AUGUST 10", 
+anomalous_values <- c("?", "APACHE COUNTY", "DROWNING", "LACK OF SNOW", "NO SEVERE WEATHER", "NONE", 
+                      "NORTHERN LIGHTS", "MARINE ACCIDENT", "MARINE MISHAP", "MONTHLY TEMPERATURE", 
+                      "OTHER", "RECORD LOW", "SNOW DROUGHT", "SOUTHEAST", "SUMMARY AUGUST 10", 
                       "SUMMARY AUGUST 11", "SUMMARY AUGUST 17", "SUMMARY AUGUST 2-3", "SUMMARY 
                       AUGUST 21", "SUMMARY AUGUST 28", "SUMMARY AUGUST 4", "SUMMARY AUGUST 7", 
                       "SUMMARY AUGUST 9", "SUMMARY JAN 17", "SUMMARY JULY 23-24", "SUMMARY JUNE 
