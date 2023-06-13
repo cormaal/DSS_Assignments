@@ -622,15 +622,15 @@ fatalities <- storm_data %>%
   summarise(
     FATALITIES = sum(FATALITIES),
   ) %>%
-        filter(FATALITIES > 100)
+        # filter(FATALITIES > 100)
+        arrange(desc(FATALITIES))
 ```
 
 ```{r}
-fatalities$EVTYPE <- factor(fatalities$EVTYPE,
-                           levels = fatalities$EVTYPE[order(fatalities$FATALITIES, decreasing = TRUE)])
+top_10_fatalities <- fatalities[1:10, ] 
+top_10_fatalities$EVTYPE <- factor(top_10_fatalities$EVTYPE,
+                           levels = top_10_fatalities$EVTYPE[order(top_10_fatalities$FATALITIES, decreasing = TRUE)])
 ```
-
-
 
 
 
@@ -646,8 +646,9 @@ injuries <- storm_data %>%
 
 ```{r}
 top_10_injuries <- injuries[1:10, ]
+top_10_injuries$EVTYPE <- factor(top_10_injuries$EVTYPE,
+                           levels = top_10_injuries$EVTYPE[order(top_10_injuries$INJURIES, decreasing = TRUE)])
 ```
-
 
 
 ```{r}
@@ -661,6 +662,12 @@ property_damage <- storm_data %>%
 ```
 
 ```{r}
+top_10_property_damage <- property_damage[1:10, ]
+top_10_property_damage$EVTYPE <- factor(top_10_property_damage$EVTYPE,
+                           levels = top_10_property_damage$EVTYPE[order(top_10_property_damage$PROPDMG, decreasing = TRUE)])
+```
+
+```{r}
 crop_damage <- storm_data %>%
   select(EVTYPE, CROPDMG) %>%
   group_by(EVTYPE) %>%
@@ -670,19 +677,37 @@ crop_damage <- storm_data %>%
         arrange(desc(CROPDMG))
 ```
 
-
+```{r}
+top_10_crop_damage <- crop_damage[1:10, ]
+top_10_crop_damage$EVTYPE <- factor(top_10_crop_damage$EVTYPE,
+                           levels = top_10_crop_damage$EVTYPE[order(top_10_crop_damage$CROPDMG, decreasing = TRUE)])
+```
 
 ```{r}
- p <- ggplot(data = fatalities, aes(x = FATALITIES, y = EVTYPE)) +
+p <- ggplot(data = top_10_fatalities, aes(x = FATALITIES, y = EVTYPE)) +
+        geom_bar(stat = "identity")
+p
+```
+
+```{r}
+p <- ggplot(data = top_10_injuries, aes(x = INJURIES, y = EVTYPE)) +
         geom_bar(stat = "identity")
 p
 ```
 
 
+```{r}
+p <- ggplot(data = top_10_property_damage, aes(x = PROPDMG, y = EVTYPE)) +
+        geom_bar(stat = "identity")
+p
+```
 
 
-
-
+```{r}
+p <- ggplot(data = top_10_crop_damage, aes(x = CROPDMG, y = EVTYPE)) +
+        geom_bar(stat = "identity")
+p
+```
 
 # Results
 
