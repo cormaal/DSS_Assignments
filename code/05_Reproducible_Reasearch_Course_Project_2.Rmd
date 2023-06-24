@@ -98,30 +98,30 @@ If you choose to submit as a PDF, please insert an obvious placeholder URL (e.g.
 
 # Title
 
-
+Impact of severe weather events in the Unites States from 1950-2011: human and economic cost
 
 
 # Synopsis
 
-
-
-
-
+The U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database contains reliable data on severe weather events from 1950 onwards. This database tracks characteristics of major storms and weather events in the United States, including when and where they occur, as well as estimates of any fatalities, injuries, and property damage. This study aims to identify the type of events that are most harmful to population health and have the greatest economic consequences. The study presents aggregated data by event type, fatalities, injuries, property damage and crop damage for the period 1950-2011. The discussion also reflects on the data cleansing approach adopted.
 
 # Data Processing
 
-As a first step the code chunks options in this R markdowwn document are set to echo = TRUE.
+To ensure total reproducibility of the study, as a first step the code chunks options in the R markdowwn document are set to echo = TRUE and session information is provided.
 
 ```{r setup, include=TRUE}
 knitr::opts_chunk$set(echo = TRUE)
+sessioninfo::session_info()                      
 ```
 
 The libraries that we will be used for this report are also loaded.
 
 ```{r load libraries, message = FALSE}
 library(dplyr)
+library(tidyr)
+library(tidytext)
 library(ggplot2)
-# library(lubridate)
+library(sessioninfo)
 ```
 
 
@@ -144,10 +144,12 @@ str(storm_data)
 
 There are 902297 rows and 37 columns. The task at hand is the following:
 
-1.	Across the United States, which types of events (as indicated in the EVTYPE variable) are most harmful with respect to population health?
+1.	Across the United States, which types of events (as indicated in the EVTYPE variable) are 
+most harmful with respect to population health?
 2.	Across the United States, which types of events have the greatest economic consequences?
 
-So the columns of interest are EVTYPE, FATALITIES, INJURIES, PROPDMG, PROPDMGEXP, CROPDMG and CROPDMGEXP.
+So the columns of interest are EVTYPE, FATALITIES, INJURIES, PROPDMG, PROPDMGEXP, CROPDMG and 
+CROPDMGEXP.
 
 First up is to check for anomalies (e.g. duplicate values) in the EVTYPE column.
 
@@ -155,11 +157,11 @@ First up is to check for anomalies (e.g. duplicate values) in the EVTYPE column.
 sort(unique(storm_data$EVTYPE))
 ```
 
-The National Weather Service Storm Data Documentation lists 48 event types, whereas the data set has 985 unique values. For the sake of space the results of the above code are not displayed. However, they show that some of the causes include extra white space, lowercase/uppercase duplicates, spelling errors or outright anomalies (see for example the many instances of "Summary"). The main cause, however, is sub-classifications (e.g. WET MICROBURST should be classified as THUNDERSTORM WIND), most likely due to changes in classification practice over the years.
+The National Weather Service Storm Data Documentation (https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf) lists 48 event types, whereas the data set has 985 unique values. For the sake of space the results of the above code are not displayed. However, they show that some of the causes include extra white space, lowercase/uppercase duplicates, spelling errors or outright anomalies (see for example the many instances of "Summary"). The main cause, however, is sub-classifications (e.g. WET MICROBURST should be classified as THUNDERSTORM WIND), most likely due to changes in classification practice over the years.
 
 The code below deals with the duplicates.
 
-```{r remove duplicates, message = FALSE}
+```{r remove duplicates, cache = TRUE, message = FALSE}
 storm_data$EVTYPE <- trimws(storm_data$EVTYPE) ## trim leading and trailing white space
 storm_data$EVTYPE <- gsub("\\s+"," ", storm_data$EVTYPE)  ## remove extra whites pace between words
 storm_data$EVTYPE <- toupper(storm_data$EVTYPE)  ## convert all strings to uppercase
@@ -550,22 +552,29 @@ sort(unique(storm_data$EVTYPE))
 
 
 
-According to the National Weather Service Storm Data Documentation, property damage estimates *should be rounded to three significant digits, followed by an alphabetical character signifying the magnitude of the number, i.e., 1.55B for $1,550,000,000. Alphabetical characters used to signify magnitude include “K” for thousands, “M” for millions, and “B” for billions.* 
+According to the National Weather Service Storm Data Documentation, property damage estimates 
+*should be rounded to three significant digits, followed by an alphabetical character signifying 
+the magnitude of the number, i.e., 1.55B for $1,550,000,000. Alphabetical characters used to signify 
+magnitude include “K” for thousands, “M” for millions, and “B” for billions.* 
 
-This means the PROPDMG and PROPDMGEXP columns will need to be combined to get numeric values that calculations can be performed on. But first, let's examine the unique values in the PROPDMGEXP column.
+This means the PROPDMG and PROPDMGEXP columns will need to be combined to get numeric values that 
+calculations can be performed on. But first, let's examine the unique values in the PROPDMGEXP column.
 
-```{r check PROPDMGEXO column}
+```{r check PROPDMGEXP column}
 table(storm_data$PROPDMGEXP)
 ```
 
-As we can see, as well as the magnitude values of "K", "M" and "B" there are 15 other anomalous values. These can be put down to data input errors. Assuming the lower case 'm' should really be an uppercase 'M', it is changed here.
+As we can see, as well as the magnitude values of "K", "M" and "B" there are 15 other anomalous 
+values. These can be put down to data input errors. Assuming the lower case 'm' should really be an 
+uppercase 'M', it is changed here.
 
 ```{r update PROPDMGEXP column}
 storm_data$PROPDMGEXP[storm_data$PROPDMGEXP == "m"] <- "M"
 ```
 
 
-Since the remaining anomalies only make 0.07% (321 of the 465934) of the records in the column they can be safely ignored.
+Since the remaining anomalies only make 0.07% (321 of the 465934) of the records in the column they 
+can be safely ignored.
 
 Here the values in the PROPDMG column are multiplied by the exponent in the PROPDMGEXP column.
 
@@ -577,7 +586,8 @@ storm_data$PROPDMG = with(storm_data, ifelse(PROPDMGEXP == "K", PROPDMG * 1000,
 ```
 
 
-Turning now to crop damage, here the CROPDMGEXP column is checked for anomalies similar to those in the PROPDMGEXP column.
+Turning now to crop damage, here the CROPDMGEXP column is checked for anomalies similar to those in 
+the PROPDMGEXP column.
 
 ```{r check CROPDMGEXO column}
 table(storm_data$CROPDMGEXP)
@@ -590,6 +600,7 @@ storm_data$CROPDMGEXP[storm_data$CROPDMGEXP == "k"] <- "K"
 storm_data$CROPDMGEXP[storm_data$CROPDMGEXP == "m"] <- "M"
 ```
 
+
 Here the values in the CROPDMG column are multiplied by the exponent in the CROPDMGEXP column.
 
 ```{r multiply CROPDMG by CROPDMGEXP}
@@ -600,114 +611,176 @@ storm_data$CROPDMG = with(storm_data, ifelse(CROPDMGEXP == "K", CROPDMG * 1000,
 ```
 
 
-Here the relevant columns are selected and the data is grouped by event type.
+The first research question is to determine the types of events across the Unites States that are most harmful with respect to population health.
 
-```{r select group and sum}
-storm_data %>%
-  select(EVTYPE, FATALITIES, INJURIES, PROPDMG, CROPDMG) %>%
-  group_by(EVTYPE) %>%
-  summarise(
-    FATALITIES = sum(FATALITIES),
-    INJURIES = sum(INJURIES),
-    PROPDMG = sum(PROPDMG),
-    CROPDMG = sum(CROPDMG)
-  ) %>%
-        arrange(desc(FATALITIES))
+This could be well displayed with a bar chart grouped by event type and harm type (i.e. fatalities or injuries).
+
+To do this we will create two data frames with three columns: event type, harm type (i.e fatalities or injuries) and number (i.e. of fatalities or injuries). We will then bind them vertically and group the combined data frame by event type and harm type.
+
+```{r create fatalities and injuries data frames}
+fatalities <- storm_data %>% select(EVTYPE, FATALITIES)
+injuries <- storm_data %>% select(EVTYPE, INJURIES)
 ```
+
+```{r bind fatalities and injuries dataframes, message = FALSE}
+vec1 <- rep(c("FATALITIES"), 902137) ## create a vector equal to the length of the fatalities df
+vec2 <- rep(c("INJURIES"), 902137) ## create a vector equal to the length of the injuries df
+
+fatalities <- mutate(fatalities, HARMTYPE = vec1, .after = EVTYPE) ## add vec1 as a column
+injuries <- mutate(injuries, HARMTYPE = vec2, .after = EVTYPE) ## add vec2 as a column
+
+colnames(fatalities)[3] <- "NUMBER" ## change the "FATALITIES" column name to "NUMBER" 
+colnames(injuries)[3] <- "NUMBER" ## change the "INJURIES" column name to "NUMBER" 
+
+## bind the two data frames, group them and summarise with the total number of fatalities and injuries
+harmful_events <- rbind(fatalities, injuries) %>%
+        group_by(EVTYPE, HARMTYPE) %>%
+        summarise(
+        NUMBER = sum(NUMBER),
+        )
+```
+
+
+Since we are only interested in the MOST harmful events, it would be useful to subset our data to display only the top 10 events in terms of fatalities and injuries. Here the top ten events in terms of fatalities are displayed.
+
+```{r top 10 fatalities}
+head(harmful_events %>% filter(HARMTYPE == "FATALITIES") %>% arrange(desc(NUMBER)), 10)
+```
+
+And here are the top ten events in terms of injuries.
+
+```{r top 10 injuries}
+head(harmful_events %>% filter(HARMTYPE == "INJURIES") %>% arrange(desc(NUMBER)), 10)
+```
+
+Now we create a list that combines the top 10 events for fatalities and injuries. We can then use this list to filter our data to only include the most relevant event types.
+
+```{r subset by top 10 fatalities and injuries}
+top_harmful_events <- c("EXCESSIVE HEAT", "EXTREME COLD/WIND CHILL", "FLASH FLOOD", "FLOOD", "HEAT", 
+                        "HIGH WIND", "ICE STORM", "LIGHTNING", "RIP CURRENT", "THUNDERSTORM WIND", 
+                        "TORNADO", "WILDFIRE", "WINTER WEATHER")
+
+harmful_events <- harmful_events %>%
+        filter(EVTYPE %in% top_harmful_events)
+```
+
+
+We would like to display the data as a faceted grid with fatalities on the left, injuries on the right and the data sorted in descending order according to fatalities. Here factors are created to do just that.
+
+```{r factors for harm data visualisation}
+## factor that will ensure fatalities appears on the left side of the faceted grid
+harmful_events$HARMTYPE <- factor(harmful_events$HARMTYPE,
+                                  levels = c("FATALITIES", "INJURIES"))
+
+## factor that manually orders the fatalities data in descending order
+harmful_events$EVTYPE <- factor(harmful_events$EVTYPE,
+                                levels = c("ICE STORM", "WILDFIRE", "WINTER WEATHER", 
+                                           "EXTREME COLD/WIND CHILL", "HIGH WIND", "FLOOD", 
+                                           "RIP CURRENT", "THUNDERSTORM WIND", "LIGHTNING", 
+                                           "FLASH FLOOD", "HEAT", "EXCESSIVE HEAT", "TORNADO"))
+```
+
+
+The following code creates the faceted grid with fatalities on the left, injuries on the right and 
+the data sorted in descending order according to fatalities.
+
+```{r fatalities and injuries plot}
+fatalities_and_injuries_plot <- ggplot(harmful_events, aes(x=NUMBER, y=EVTYPE)) + 
+        geom_bar(stat="identity") + 
+        facet_grid(cols = vars(HARMTYPE), scales = "free") + 
+        labs(title = "Harmful Storm Events in the Unites States (1950-2011)", x = "", y = "", fill = "")
+```
+
+
+
+The second research question is to determine the types of events across the Unites States that have 
+the greatest economic consequences.
+
+The above steps are repeated with the property damage and crop damage data.
+
+```{r create property damage and crop damage data frames, message = FALSE}
+property_damage <- storm_data %>% select(EVTYPE, PROPDMG)
+crop_damage <- storm_data %>% select(EVTYPE, CROPDMG)
+```
+
+```{r bind property_damage and crop_damage dataframes, message = FALSE}
+vec3 <- rep(c("PROPERTY DAMAGE"), 902137) ## create a vector equal to the length of the property damage df
+vec4 <- rep(c("CROP DAMAGE"), 902137) ## create a vector equal to the length of the crop damage df
+
+property_damage <- mutate(property_damage, DMGTYPE = vec3, .after = EVTYPE) ## add vec3 as a column
+crop_damage <- mutate(crop_damage, DMGTYPE = vec4, .after = EVTYPE) ## add vec4 as a column
+
+colnames(property_damage)[3] <- "NUMBER" ## change the "PROPDMG" column name to "NUMBER" 
+colnames(crop_damage)[3] <- "NUMBER" ## change the "CROPDMG" column name to "NUMBER" 
+
+## bind the two data frames, group them and summarise with the total amount of damage
+damaging_events <- rbind(property_damage, crop_damage) %>%
+        group_by(EVTYPE, DMGTYPE) %>%
+        summarise(
+        NUMBER = sum(NUMBER),
+        )
+```
+
+
+Since we are only interested in the events with the GREATEST economic consequences, it would be useful to subset our data to display only the top 10 events in terms of property and crop damage. Here the top ten events in terms of property damage are displayed.
+
+```{r top 10 property damage}
+head(damaging_events %>% filter(DMGTYPE == "PROPERTY DAMAGE") %>% arrange(desc(NUMBER)), 10)
+```
+
+And here are the top ten events in terms of crop damage.
+
+```{r top 10 crop damage}
+head(damaging_events %>% filter(DMGTYPE == "CROP DAMAGE") %>% arrange(desc(NUMBER)), 10)
+```
+
+Now we create a list that combines the top 10 events for property and crop damage. We can then use this list to filter our data to only include the most relevant event types.
+
+```{r subset by top 10 property and crop damage}
+top_damaging_events <- c("DROUGHT", "EXTREME COLD/WIND CHILL", "FLASH FLOOD", "FLOOD", "FROST/FREEZE", 
+                        "HAIL", "HEAVY RAIN", "HURRICANE", "ICE STORM", "STORM/SURGE TIDE", 
+                        "THUNDERSTORM WIND", "TORNADO", "TROPICAL STORM", "WILDFIRE", "WINTER WEATHER")
+
+damaging_events <- damaging_events %>%
+        filter(EVTYPE %in% top_damaging_events)
+```
+
+
+Since the damage values are so high, we will express them as billions of dollars.
 
 ```{r}
-fatalities <- storm_data %>%
-  select(EVTYPE, FATALITIES) %>%
-  group_by(EVTYPE) %>%
-  summarise(
-    FATALITIES = sum(FATALITIES),
-  ) %>%
-        # filter(FATALITIES > 100)
-        arrange(desc(FATALITIES))
-```
-
-```{r}
-top_10_fatalities <- fatalities[1:10, ] 
-top_10_fatalities$EVTYPE <- factor(top_10_fatalities$EVTYPE,
-                           levels = top_10_fatalities$EVTYPE[order(top_10_fatalities$FATALITIES, decreasing = TRUE)])
+damaging_events$NUMBER <- damaging_events$NUMBER / 1000000000
 ```
 
 
 
-```{r}
-injuries <- storm_data %>%
-  select(EVTYPE, INJURIES) %>%
-  group_by(EVTYPE) %>%
-  summarise(
-    INJURIES = sum(INJURIES),
-  ) %>%
-        arrange(desc(INJURIES))
-```
 
-```{r}
-top_10_injuries <- injuries[1:10, ]
-top_10_injuries$EVTYPE <- factor(top_10_injuries$EVTYPE,
-                           levels = top_10_injuries$EVTYPE[order(top_10_injuries$INJURIES, decreasing = TRUE)])
-```
+We would like to display the data as a faceted grid with fatalities on the left, injuries on the right and the data sorted in descending orders according to fatalities. Here factors are created to do just that.
 
+```{r factors for damage data visualisation}
+## factor that will ensure fatalities appears on the left side of the faceted grid
+damaging_events$DMGTYPE <- factor(damaging_events$DMGTYPE,
+                                  levels = c("PROPERTY DAMAGE", "CROP DAMAGE"))
 
-```{r}
-property_damage <- storm_data %>%
-  select(EVTYPE, PROPDMG) %>%
-  group_by(EVTYPE) %>%
-  summarise(
-    PROPDMG = sum(PROPDMG),
-  ) %>%
-        arrange(desc(PROPDMG))
-```
-
-```{r}
-top_10_property_damage <- property_damage[1:10, ]
-top_10_property_damage$EVTYPE <- factor(top_10_property_damage$EVTYPE,
-                           levels = top_10_property_damage$EVTYPE[order(top_10_property_damage$PROPDMG, decreasing = TRUE)])
-```
-
-```{r}
-crop_damage <- storm_data %>%
-  select(EVTYPE, CROPDMG) %>%
-  group_by(EVTYPE) %>%
-  summarise(
-    CROPDMG = sum(CROPDMG),
-  ) %>%
-        arrange(desc(CROPDMG))
-```
-
-```{r}
-top_10_crop_damage <- crop_damage[1:10, ]
-top_10_crop_damage$EVTYPE <- factor(top_10_crop_damage$EVTYPE,
-                           levels = top_10_crop_damage$EVTYPE[order(top_10_crop_damage$CROPDMG, decreasing = TRUE)])
-```
-
-```{r}
-p <- ggplot(data = top_10_fatalities, aes(x = FATALITIES, y = EVTYPE)) +
-        geom_bar(stat = "identity")
-p
-```
-
-```{r}
-p <- ggplot(data = top_10_injuries, aes(x = INJURIES, y = EVTYPE)) +
-        geom_bar(stat = "identity")
-p
+## factor that manually orders the fatalities data in descending order
+damaging_events$EVTYPE <- factor(damaging_events$EVTYPE,
+                                levels = c("DROUGHT", "EXTREME COLD/WIND CHILL", "FROST/FREEZE", 
+                                           "HEAVY RAIN", "ICE STORM", "WINTER WEATHER", 
+                                           "TROPICAL STORM", "WILDFIRE", "THUNDERSTORM WIND", "HAIL", 
+                                           "FLASH FLOOD", "STORM/SURGE TIDE", "TORNADO", "HURRICANE", 
+                                           "FLOOD"))
 ```
 
 
-```{r}
-p <- ggplot(data = top_10_property_damage, aes(x = PROPDMG, y = EVTYPE)) +
-        geom_bar(stat = "identity")
-p
+The following code creates the faceted grid with fatalities on the left, injuries on the right and the data sorted in descending order according to fatalities.
+
+```{r property and crop damage plot}
+property_and_crop_damage_plot <- ggplot(damaging_events, aes(x=NUMBER, y=EVTYPE)) + 
+        geom_bar(stat="identity") + 
+        facet_grid(cols = vars(DMGTYPE), scales = "free") + 
+        labs(title = "Damaging Storm Events in the Unites States (1950-2011)", x = "Billions of dollars", y = "", fill = "")
 ```
 
-
-```{r}
-p <- ggplot(data = top_10_crop_damage, aes(x = CROPDMG, y = EVTYPE)) +
-        geom_bar(stat = "identity")
-p
-```
 
 # Results
 
