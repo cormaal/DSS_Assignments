@@ -108,24 +108,23 @@ The U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database
 
 # Data Processing
 
+The libraries that will be used for this report are loaded.
+
+```{r load libraries, message = FALSE}
+library(sessioninfo)
+library(dplyr)
+library(tidyr)
+library(tidytext)
+library(ggplot2)
+```
+
+
 To ensure total reproducibility of the study, as a first step the code chunks options in the R markdowwn document are set to echo = TRUE and session information is provided.
 
 ```{r setup, include=TRUE}
 knitr::opts_chunk$set(echo = TRUE)
 sessioninfo::session_info()                      
 ```
-
-
-The libraries that we will be used for this report are also loaded.
-
-```{r load libraries, message = FALSE}
-library(dplyr)
-library(tidyr)
-library(tidytext)
-library(ggplot2)
-library(sessioninfo)
-```
-
 
 Here  the contents of the zip file are downloaded and read into a data frame. N.B. the 'read.csv' command can handle compressed files automatically.
 
@@ -147,12 +146,10 @@ str(storm_data)
 
 There are 902297 rows and 37 columns. The task at hand is the following:
 
-1.	Across the United States, which types of events (as indicated in the EVTYPE variable) are 
-most harmful with respect to population health?
+1.	Across the United States, which types of events (as indicated in the EVTYPE variable) are most harmful with respect to population health?
 2.	Across the United States, which types of events have the greatest economic consequences?
 
-So the columns of interest are EVTYPE, FATALITIES, INJURIES, PROPDMG, PROPDMGEXP, CROPDMG and 
-CROPDMGEXP.
+So the columns of interest are EVTYPE, FATALITIES, INJURIES, PROPDMG, PROPDMGEXP, CROPDMG and CROPDMGEXP.
 
 First up is to check for anomalies (e.g. duplicate values) in the EVTYPE column.
 
@@ -161,9 +158,15 @@ sort(unique(storm_data$EVTYPE))
 ```
 
 
-The National Weather Service Storm Data Documentation (https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf) lists 48 event types, whereas the data set has 985 unique values. For the sake of space the results of the above code are not displayed. However, they show that some of the causes include extra white space, lowercase/uppercase duplicates, spelling errors or outright anomalies (see for example the many instances of "Summary"). The main cause, however, is sub-classifications (e.g. WET MICROBURST should be classified as THUNDERSTORM WIND), most likely due to changes in classification practice over the years.
+The National Weather Service [Storm Data Documentation](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf) lists 48 event types, whereas the data set has 985 unique values. For the sake of space the results of the above code are not displayed. However, they show that some of the causes include extra white space, lowercase/uppercase duplicates, spelling errors or outright anomalies (see for example the many instances of "Summary"). The main cause, however, is sub-classifications (e.g. WET MICROBURST should be classified as THUNDERSTORM WIND), most likely due to changes in classification practice over the years.
 
-The code below deals with the duplicates.
+There are two main options for dealing with this messy data. The first would be to check the impact the messy data has on the overall figures for harm to human life and damage to crops and property. If the impact was not significant the messy rows of data could simply be deleted.
+
+The other option would be to clean the spelling errors, attempt to reclassify the sub-classifications to one of the 48 event types, and to simply delete any anomalous rows of data that do not fall into either of these two categories.
+
+In this study the second approach has been adopted. Discussion of the merits of both approaches can be found in the results section.
+
+The code below deals with the messy data.
 
 ```{r remove duplicates, cache = TRUE, message = FALSE}
 storm_data$EVTYPE <- trimws(storm_data$EVTYPE) ## trim leading and trailing white space
@@ -179,7 +182,7 @@ storm_data$EVTYPE <- sapply(storm_data$EVTYPE,
                             function(x) replace(x, x %in% avalanche, "AVALANCHE"))
 
 blizzard <- c("BLIZZARD AND EXTREME WIND CHIL", "BLIZZARD AND HEAVY SNOW", "BLIZZARD SUMMARY", 
-              "BLIZZARD WEATHER","BLIZZARD/FREEZING RAIN", "BLIZZARD/HEAVY SNOW", 
+              "BLIZZARD WEATHER", "BLIZZARD/FREEZING RAIN", "BLIZZARD/HEAVY SNOW", 
               "BLIZZARD/HIGH WIND", "BLIZZARD/WINTER STORM", "BLOWING SNOW", 
               "BLOWING SNOW- EXTREME WIND CHI", "BLOWING SNOW & EXTREME WIND CH", 
               "BLOWING SNOW/EXTREME WIND CHIL", "GROUND BLIZZARD")
@@ -683,7 +686,7 @@ harmful_events$EVTYPE <- factor(harmful_events$EVTYPE,
 The following code creates the faceted grid with fatalities on the left, injuries on the right and 
 the data sorted in descending order according to fatalities.
 
-```{r fatalities and injuries plot}
+```{r create fatalities and injuries plot}
 fatalities_and_injuries_plot <- ggplot(harmful_events, aes(x=NUMBER, y=EVTYPE)) + 
         geom_bar(stat="identity") + 
         facet_grid(cols = vars(HARMTYPE), scales = "free") + 
@@ -747,7 +750,7 @@ damaging_events <- damaging_events %>%
 
 Since the damage values are so high, we will express them as billions of dollars.
 
-```{r}
+```{r express in billions of dollars}
 damaging_events$NUMBER <- damaging_events$NUMBER / 1000000000
 ```
 
@@ -771,25 +774,60 @@ damaging_events$EVTYPE <- factor(damaging_events$EVTYPE,
 
 The following code creates the faceted grid with fatalities on the left, injuries on the right and the data sorted in descending order according to fatalities.
 
-```{r property and crop damage plot}
+```{r create property and crop damage plot}
 property_and_crop_damage_plot <- ggplot(damaging_events, aes(x=NUMBER, y=EVTYPE)) + 
         geom_bar(stat="identity") + 
         facet_grid(cols = vars(DMGTYPE), scales = "free") + 
-        labs(title = "Damaging Storm Events in the Unites States (1950-2011)", x = "Billions of dollars", y = "", fill = "")
+        labs(title = "Damaging Storm Events in the Unites States (1950-2011)", 
+             x = "Billions of dollars", y = "", fill = "")
 ```
 
 
 # Results
 
-From the charts below that the most serious event types have had a very similar impact in terms of human fatalities and injuries.
+From the chart below we can see that the most serious event types have had a very similar impact in terms of human fatalities and injuries.
 
-```{r}
+```{r fatalities and injuries plot}
 fatalities_and_injuries_plot
 ```
 
+Tornadoes have had by far the most severe impact, causing nearly 6,000 fatalities and over 90,000 injuries over the period. In descending order, excessive heat, heat, flash flood, lightning, thunderstorm wind and flood have also produced a significant number of fatalities and injuries. Rip current is also worth mentioning given the high number of fatalities and the high mortality to injury ratio.
 
+In summary, the most harmful severe weather event types can be grouped into five broad categories:
 
+* tornadoes
+* excessive heat / heat
+* flash flood / flood
+* lightning / thunderstorm wind
+* rip current
 
+The picture is somewhat different when we turn to the event types that have had the greatest economic consequences.
+
+```{r property and crop damage plot}
+property_and_crop_damage_plot
+```
+
+Flood by far has had the greatest economic consequences, with over 150 billion dollars in property damage and over 10 billion dollars in crop damage. Other severe weather events involving wind and water (hurricanes, tornadoes, flash flood, hail and thunderstorm wind) have also had significant economic consequences for both property and crops.
+
+On the other hand, several severe weather events significantly impact crops but have little effect on property. The leading cause of crop damage by far is drought, with nearly 14 billion dollars worth of damage, while ice storms, frost/freeze, extreme cold/wind chill and heavy rain have also had a significant agricultural impact.
+
+We can therefore divide the events into two separate categories:
+
+* events impacting both property and crops
+    * flood / flash flood
+    * hurricane / tornado / thunderstorm wind
+    * hail
+
+* events impacting only crops
+    * drought
+    * ice storm / frost/freeze / extreme cold/wind chill
+    * heavy rain
+
+One of the challenging aspects of this study has been dealing with the messy data. Since the research questions really only required a global overview of the most harmful and damaging severe weather events, the quickest and easiest option would have been to simply remove the anomalous entries. However, given the importance for life and property that decisions based on the outcomes of the study holds, it seemed reasonable to invest the effort to incorporate as much of the gathered data as possible in the study. Simply removing the anomalous data could have led to distortions in the overall outcome. Take for example the fact that there were 130 variants of *thunderstorm wind* - simply removing these entries could have downplayed the importance of this severe weather event.
+
+On the other hand, the reclassification of many of the data entries could also have led to some small amount of bias or error in classification. Since the data scientist performing the analysis has no particular expertise in storm data classification, the review by a subject matter expert of the code reclassifying many of the severe weather event entries would be welcome.
+
+Lastly, this study presents aggregated data for all severe weather events in the United States over the period 1950-2011, without taking into consideration possible changes over time. Nonetheless, it is commonly accepted that one impact of climate change has been an increasing frequency of severe weather events. It could therefore be useful to carry out a time-series analysis of the data to determine whether any of the severe weather events identified in these results are becoming more frequent with respect to others. This could then further support the prioritisation of resources to combat the effects of severe weather events.
 
 
 
