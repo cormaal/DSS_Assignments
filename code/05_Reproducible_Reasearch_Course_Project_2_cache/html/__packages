@@ -2,3 +2,4 @@ dplyr
 tidyr
 tidytext
 ggplot2
+sessioninfo
