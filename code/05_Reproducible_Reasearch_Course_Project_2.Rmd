@@ -103,7 +103,8 @@ Impact of severe weather events in the Unites States from 1950-2011: human and e
 
 # Synopsis
 
-The U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database contains reliable data on severe weather events from 1950 onwards. This database tracks characteristics of major storms and weather events in the United States, including when and where they occur, as well as estimates of any fatalities, injuries, and property damage. This study aims to identify the type of events that are most harmful to population health and have the greatest economic consequences. The study presents aggregated data by event type, fatalities, injuries, property damage and crop damage for the period 1950-2011. The discussion also reflects on the data cleansing approach adopted.
+The U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database contains reliable data on severe weather events from 1950 onwards. This database tracks characteristics of major storms and weather events in the United States, including when and where they occur, as well as estimates of any fatalities, injuries, and property damage. This study aims to identify the type of events that are most harmful to population health and have the greatest economic consequences. The study presents aggregated data by event type, fatalities, injuries, property damage and crop damage for the period 1950-2011. The discussion also reflects on the data cleansing approach adopted and the choice of presenting total aggregated data for the period.
+
 
 # Data Processing
 
@@ -113,6 +114,7 @@ To ensure total reproducibility of the study, as a first step the code chunks op
 knitr::opts_chunk$set(echo = TRUE)
 sessioninfo::session_info()                      
 ```
+
 
 The libraries that we will be used for this report are also loaded.
 
@@ -125,7 +127,6 @@ library(sessioninfo)
 ```
 
 
-
 Here  the contents of the zip file are downloaded and read into a data frame. N.B. the 'read.csv' command can handle compressed files automatically.
 
 ```{r download and read file, cache = TRUE, message = FALSE}
@@ -136,11 +137,13 @@ download.file(url, destfile)
 storm_data <- read.csv("./data/05_assignment2_data.csv.bz2")
 ```
 
+
 The data processing begins with an analysis of the structure of the data.
 
 ```{r data structure}
 str(storm_data)
 ```
+
 
 There are 902297 rows and 37 columns. The task at hand is the following:
 
@@ -156,6 +159,7 @@ First up is to check for anomalies (e.g. duplicate values) in the EVTYPE column.
 ```{r check EVTYPE column, results = "hide"}
 sort(unique(storm_data$EVTYPE))
 ```
+
 
 The National Weather Service Storm Data Documentation (https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf) lists 48 event types, whereas the data set has 985 unique values. For the sake of space the results of the above code are not displayed. However, they show that some of the causes include extra white space, lowercase/uppercase duplicates, spelling errors or outright anomalies (see for example the many instances of "Summary"). The main cause, however, is sub-classifications (e.g. WET MICROBURST should be classified as THUNDERSTORM WIND), most likely due to changes in classification practice over the years.
 
@@ -550,12 +554,7 @@ sort(unique(storm_data$EVTYPE))
 ```
 
 
-
-
-According to the National Weather Service Storm Data Documentation, property damage estimates 
-*should be rounded to three significant digits, followed by an alphabetical character signifying 
-the magnitude of the number, i.e., 1.55B for $1,550,000,000. Alphabetical characters used to signify 
-magnitude include “K” for thousands, “M” for millions, and “B” for billions.* 
+According to the National Weather Service [Storm Data Documentation](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf), property damage estimates *should be rounded to three significant digits, followed by an alphabetical character signifying the magnitude of the number, i.e., 1.55B for $1,550,000,000. Alphabetical characters used to signify magnitude include “K” for thousands, “M” for millions, and “B” for billions.* 
 
 This means the PROPDMG and PROPDMGEXP columns will need to be combined to get numeric values that 
 calculations can be performed on. But first, let's examine the unique values in the PROPDMGEXP column.
@@ -564,17 +563,15 @@ calculations can be performed on. But first, let's examine the unique values in 
 table(storm_data$PROPDMGEXP)
 ```
 
-As we can see, as well as the magnitude values of "K", "M" and "B" there are 15 other anomalous 
-values. These can be put down to data input errors. Assuming the lower case 'm' should really be an 
-uppercase 'M', it is changed here.
+
+As we can see, as well as the magnitude values of "K", "M" and "B" there are 15 other anomalous values. These can be put down to data input errors. Assuming the lower case 'm' should really be an uppercase 'M', it is changed here.
 
 ```{r update PROPDMGEXP column}
 storm_data$PROPDMGEXP[storm_data$PROPDMGEXP == "m"] <- "M"
 ```
 
 
-Since the remaining anomalies only make 0.07% (321 of the 465934) of the records in the column they 
-can be safely ignored.
+Since the remaining anomalies only make 0.07% (321 of the 465934) of the records in the column they can be safely ignored.
 
 Here the values in the PROPDMG column are multiplied by the exponent in the PROPDMGEXP column.
 
@@ -586,12 +583,12 @@ storm_data$PROPDMG = with(storm_data, ifelse(PROPDMGEXP == "K", PROPDMG * 1000,
 ```
 
 
-Turning now to crop damage, here the CROPDMGEXP column is checked for anomalies similar to those in 
-the PROPDMGEXP column.
+Turning now to crop damage, here the CROPDMGEXP column is checked for anomalies similar to those in the PROPDMGEXP column.
 
 ```{r check CROPDMGEXO column}
 table(storm_data$CROPDMGEXP)
 ```
+
 
 Again, assuming the lowercase "k" and "m" should be upper case they are changed here.
 
@@ -647,11 +644,13 @@ Since we are only interested in the MOST harmful events, it would be useful to s
 head(harmful_events %>% filter(HARMTYPE == "FATALITIES") %>% arrange(desc(NUMBER)), 10)
 ```
 
+
 And here are the top ten events in terms of injuries.
 
 ```{r top 10 injuries}
 head(harmful_events %>% filter(HARMTYPE == "INJURIES") %>% arrange(desc(NUMBER)), 10)
 ```
+
 
 Now we create a list that combines the top 10 events for fatalities and injuries. We can then use this list to filter our data to only include the most relevant event types.
 
@@ -692,9 +691,7 @@ fatalities_and_injuries_plot <- ggplot(harmful_events, aes(x=NUMBER, y=EVTYPE)) 
 ```
 
 
-
-The second research question is to determine the types of events across the Unites States that have 
-the greatest economic consequences.
+The second research question is to determine the types of events across the Unites States that have the greatest economic consequences.
 
 The above steps are repeated with the property damage and crop damage data.
 
@@ -702,6 +699,7 @@ The above steps are repeated with the property damage and crop damage data.
 property_damage <- storm_data %>% select(EVTYPE, PROPDMG)
 crop_damage <- storm_data %>% select(EVTYPE, CROPDMG)
 ```
+
 
 ```{r bind property_damage and crop_damage dataframes, message = FALSE}
 vec3 <- rep(c("PROPERTY DAMAGE"), 902137) ## create a vector equal to the length of the property damage df
@@ -721,18 +719,19 @@ damaging_events <- rbind(property_damage, crop_damage) %>%
         )
 ```
 
-
 Since we are only interested in the events with the GREATEST economic consequences, it would be useful to subset our data to display only the top 10 events in terms of property and crop damage. Here the top ten events in terms of property damage are displayed.
 
 ```{r top 10 property damage}
 head(damaging_events %>% filter(DMGTYPE == "PROPERTY DAMAGE") %>% arrange(desc(NUMBER)), 10)
 ```
 
+
 And here are the top ten events in terms of crop damage.
 
 ```{r top 10 crop damage}
 head(damaging_events %>% filter(DMGTYPE == "CROP DAMAGE") %>% arrange(desc(NUMBER)), 10)
 ```
+
 
 Now we create a list that combines the top 10 events for property and crop damage. We can then use this list to filter our data to only include the most relevant event types.
 
@@ -751,8 +750,6 @@ Since the damage values are so high, we will express them as billions of dollars
 ```{r}
 damaging_events$NUMBER <- damaging_events$NUMBER / 1000000000
 ```
-
-
 
 
 We would like to display the data as a faceted grid with fatalities on the left, injuries on the right and the data sorted in descending orders according to fatalities. Here factors are created to do just that.
@@ -784,6 +781,11 @@ property_and_crop_damage_plot <- ggplot(damaging_events, aes(x=NUMBER, y=EVTYPE)
 
 # Results
 
+From the charts below that the most serious event types have had a very similar impact in terms of human fatalities and injuries.
+
+```{r}
+fatalities_and_injuries_plot
+```
 
 
 
